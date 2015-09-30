@@ -13,16 +13,22 @@ public class Crack implements ServerCommand {
     public String executeCommand(Map<String, Object> request) {
         String md5 = (String) request.get("md5");
 
-        UICmd commander = new UICmd();
+        Commands commander = new Commands();
         String sendip = Util.getCurrentHostIp();
         int sendport = new Commands().getServer().getPort();
         String requestId = "ffff";
         int ttlValue = 3;
 
         for(int i = 0; i < UICmd.knownUrls.length; i++){
-            commander.doAction(String.format("send get %s/resource sendip=%s sendport=%d id=%s ttl=%d",
-                    UICmd.knownUrls[i], sendip, sendport, requestId, ttlValue));
+            commander.sendRequest("GET", String.format("%s/resource", UICmd.knownUrls[i]),
+                    String.format("sendip=%s", sendip),
+                    String.format("sendport=%s", sendport),
+                    String.format("id=%s", requestId),
+                    String.format("ttl=%s", ttlValue)
+            );
         }
+
+        //TODO sleep until answer done
 
         return "cracked! " + md5;
     }

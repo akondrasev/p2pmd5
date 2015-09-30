@@ -22,7 +22,11 @@ public class UICmd implements Runnable {
 
     private static boolean isTerminated;
     public static final String[] knownUrls = new String[]{
+<<<<<<< HEAD
         "192.168.10.76:1111", "192.168.10.76:2222", "192.168.10.76:3333"
+=======
+        "127.0.0.1:1111", "127.0.0.1:2222", "127.0.0.1:3333"
+>>>>>>> origin/master
     };
 
     public UICmd() {

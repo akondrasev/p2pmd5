@@ -11,7 +11,7 @@ public class Resource implements ServerCommand {
 
     @Override
     public String executeCommand(Map<String, Object> request) {
-        UICmd commander = new UICmd();
+        Commands commander = new Commands();
 
         String toIp = (String) request.get("sendip");
         String toPort = (String) request.get("sendport");
@@ -22,14 +22,25 @@ public class Resource implements ServerCommand {
         ttlValue--;
 
         String sendip = Util.getCurrentHostIp();
-        int port = new Commands().getServer().getPort();
-        commander.doAction(String.format("send post %s:%s/resourcereply sendip=%s port=%s id=%s resource=%s",
-                toIp, toPort, sendip, port, requestId, 100));
+        int port = commander.getServer().getPort();
+        commander.sendRequest(
+                "POST", String.format("%s:%s/resourcereply", toIp, toPort),
+                String.format("ip=%s", sendip),
+                String.format("port=%s", port),
+                String.format("id=%s",requestId),
+                String.format("resource=%s", 100)
+                );
 
         if(ttlValue > 1 ){
             for(int i = 0; i < UICmd.knownUrls.length; i++){
-                commander.doAction(String.format("send get %s/resource sendip=%s sendport=%d id=%s ttl=%d",
-                        UICmd.knownUrls[i], sendip, port, requestId, ttlValue));
+                commander.sendRequest(
+                        "GET",
+                        String.format("%s/resource",UICmd.knownUrls[i]),
+                        String.format("sendip=%s", sendip),
+                        String.format("sendport=%s", port),
+                        String.format("ttl=%s", ttlValue),
+                        String.format("id=%s", requestId)
+                );
             }
         }
 

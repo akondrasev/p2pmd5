@@ -46,6 +46,9 @@ public class Commands {
             return;
         }
 
+
+        System.out.println(String.format("Sending request to %s", url));
+
         switch (requestMethod.toUpperCase()) {
             case Util.HTTP_METHOD_GET:
                 sendGet(url, params);

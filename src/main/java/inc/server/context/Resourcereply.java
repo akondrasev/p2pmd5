@@ -10,21 +10,23 @@ import java.util.Map;
 public class Resourcereply implements ServerCommand {
     @Override
     public String executeCommand(Map<String, Object> request) {
-        String resourceAvailable = (String) request.get("resource");
+        Commands commander = new Commands();
+        String toPort = (String) request.get("port");
+        String toIp = (String) request.get("ip");
+        String requestId = (String) request.get("id");
 
-        if(Integer.parseInt(resourceAvailable) > 0){
-            String toPort = (String) request.get("port");
-            String toIp = (String) request.get("sendip");
-            String requestId = (String) request.get("id");
+        String sendip = Util.getCurrentHostIp();
+        int port = new Commands().getServer().getPort();
 
-            String sendip = Util.getCurrentHostIp();
-            int port = new Commands().getServer().getPort();
-            String cmd = String.format("send post %s:%s/checkmd5 sendip=%s port=%s id=%s md5=%s ranges=%s wildcard=%s symbolrange=%s",
-                    toIp, toPort, sendip, port, requestId, "md5", "[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"]", "?", "[[3,10], [100,150]]");
-
-            new UICmd().doAction(cmd);
-            return "checkmd5 sent";
-        }
-        return "too low resource";
+        commander.sendRequest("POST", String.format("%s:%s/checkmd5", toIp, toPort),
+                String.format("ip=%s", sendip),
+                String.format("port=%s", port),
+                String.format("id=%s", requestId),
+                String.format("md5=%s", "hash"),
+                String.format("ranges=%s", "[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"]"),
+                String.format("wildcard=%s", "?"),
+                String.format("symbolrange=%s", "[[3,10], [100,150]]")
+        );
+        return "checkmd5 sent";
     }
 }
