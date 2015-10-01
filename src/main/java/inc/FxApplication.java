@@ -74,9 +74,7 @@ public class FxApplication extends Application {
             textArea.appendText(commander.startServer(port) + Util.CRLF);
         });
 
-        stopServerButton.setOnAction(event -> {
-            textArea.appendText(commander.stopServer() + Util.CRLF);
-        });
+        stopServerButton.setOnAction(event -> textArea.appendText(commander.stopServer() + Util.CRLF));
 
         primaryStage.show();
         //TODO make server close on exit
