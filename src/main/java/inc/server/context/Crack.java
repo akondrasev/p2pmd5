@@ -1,6 +1,5 @@
 package inc.server.context;
 
-import inc.controller.Command;
 import inc.ui.UICmd;
 import inc.util.Commands;
 import inc.util.Util;
@@ -10,8 +9,8 @@ import java.util.Map;
 //TODO crack?md5=asdasdasddasdasd - inital request - sync
 public class Crack implements ServerCommand {
     @Override
-    public String executeCommand(Map<String, Object> request) {
-        String md5 = (String) request.get("md5");
+    public String executeCommand(Map<String, String> request) {
+        String md5 = request.get("md5");
 
         Commands commander = new Commands();
         String sendip = Util.getCurrentHostIp();

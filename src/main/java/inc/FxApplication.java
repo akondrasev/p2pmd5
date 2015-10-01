@@ -1,12 +1,13 @@
 package inc;
 
-import inc.ui.UICmd;
+import inc.util.Commands;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -14,7 +15,20 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 public class FxApplication extends Application {
+
+    private String machinesJson;
+
+    private Commands commander = new Commands();
+
+    public static void main(String... args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         GridPane gridPane = new GridPane();
@@ -23,7 +37,7 @@ public class FxApplication extends Application {
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(25, 25, 25, 25));
 
-        Scene scene = new Scene(gridPane, 400, 200);
+        Scene scene = new Scene(gridPane, 800, 300);
 
         primaryStage.setTitle("Peer to Peer (md5)");
         primaryStage.setScene(scene);
@@ -45,19 +59,31 @@ public class FxApplication extends Application {
         gridPane.add(stopServerButton, 3, 1);
         stopServerButton.cancelButtonProperty();
 
+        TextArea textArea = new TextArea();
+        textArea.setWrapText(true);
+        gridPane.add(textArea, 1, 2);
+
         startServerButton.setOnAction(event -> {
-            String port = textFieldPort.getText();
-            new UICmd().doAction(String.format("startserver %s", port));
+            int port;
+            try {
+                port = Integer.parseInt(textFieldPort.getText());
+            } catch (NumberFormatException e) {
+                port = 1215;
+            }
+            commander.startServer(port);
         });
 
-        stopServerButton.setOnAction(event -> {
-            new UICmd().doAction("stopserver");
-        });
+        stopServerButton.setOnAction(event -> commander.stopServer()
+        );
+
+        System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                textArea.appendText(String.valueOf((char) b));
+            }
+        }));
 
         primaryStage.show();
-    }
-
-    public static void main(String... args) {
-        launch(args);
+        //TODO make server close on exit
     }
 }

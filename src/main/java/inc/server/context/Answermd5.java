@@ -6,7 +6,7 @@ import java.util.Map;
 // {"ip": "55.66.77.88", "port": "6788", "id": "asasasas", "md5": "siinonmd5string", "result": 0, "resultstring": "sssasasc"}
 public class Answermd5 implements ServerCommand {
     @Override
-    public String executeCommand(Map<String, Object> request) {
+    public String executeCommand(Map<String, String> request) {
         return "result";
     }
 }

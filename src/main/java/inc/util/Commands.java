@@ -2,12 +2,18 @@ package inc.util;
 
 import inc.server.Server;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Commands {
 
-    private static Server server;
+    private static final Server server;
     static {
         server = new Server();
     }
@@ -21,47 +27,42 @@ public class Commands {
         }
     }
 
-    public void stopServer() {
+    public String stopServer() {
         synchronized (server){
             if(!server.isTerminated()){
                 server.stop();
+                return "Server stopped successfully";
             }
+
+            return "Server is not running yet";
         }
     }
 
-    public void startServer(int port) {
+    public String startServer(int port) {
         synchronized (server){
             if(!server.isTerminated()){
-                return;
+                return "Server is already started";
             }
-            server.setPort(port);
-            server.start();
+            server.start(port);
+            return "Server started listening port " + port;
         }
     }
 
 
-    public void sendRequest(String requestMethod, String url, String... params) {
-        if (url == null || url.equals("")) {
-            System.out.println("No url specified");
-            return;
-        }
-
-
+    public String sendRequest(String requestMethod, String url, String... params) {
         System.out.println(String.format("Sending request to %s", url));
 
         switch (requestMethod.toUpperCase()) {
             case Util.HTTP_METHOD_GET:
-                sendGet(url, params);
-                break;
+                return sendGet(url, params);
             case Util.HTTP_METHOD_POST:
-                sendPost(url, params);
-                break;
+                return sendPost(url, params);
             default:
-                System.out.println(String.format("Unknown request method '%s'", requestMethod));
+                return String.format("No such HTTP method '%s', cannot send request", requestMethod);
         }
     }
 
-    private void sendPost(String url, String... params) {
+    private String sendPost(String url, String... params) {
         int port = 80;
         String host = Util.getHostInUrl(url);
         String[] address = host.split(":");
@@ -76,13 +77,13 @@ public class Commands {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
             System.out.println("Cannot connect to host " +  e.getMessage());
-            return;
+            return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
             System.out.println("Unknown host, check spelling");
-            return;
+            return String.format("Unknown host '%s', check if host is connected to the network", host);
         } catch (IOException e) {
             System.out.println("Cannot open socket");
-            return;
+            return "Cannot open socket connection";
         }
 
         try (
@@ -100,21 +101,21 @@ public class Commands {
 
             out.flush();
 
-            char responseCode = (char) in.read();
-            System.out.println(responseCode);
+            char response = (char) in.read();
+            System.out.println(response);
 
-            if(responseCode == '0'){
+            if (response == '0') {
                 System.out.println("OK");
             } else {
                 System.out.println("ne OK");
             }
-
+            return String.format("Response from '%s:%d': %s", host, port, response);
         } catch (IOException e) {
-            e.printStackTrace();
+            return String.format("Something went wrong with reading/writing to socket '%s'", socket.getLocalAddress());
         }
     }
 
-    private void sendGet(String url, String... params) {
+    private String sendGet(String url, String... params) {
 
         int port = 80;
         String host = Util.getHostInUrl(url);
@@ -130,13 +131,13 @@ public class Commands {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
             System.out.println("Cannot connect to host " +  e.getMessage());
-            return;
+            return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
             System.out.println("Unknown host, check spelling");
-            return;
+            return String.format("Unknown host '%s', check if host is connected to the network", host);
         } catch (IOException e) {
             System.out.println("Cannot open socket");
-            return;
+            return "Cannot open socket connection";
         }
 
         try (
@@ -155,17 +156,18 @@ public class Commands {
             out.write(Util.CRLF);
             out.flush();
 
-            char responseCode = (char) in.read();
-            System.out.println(responseCode);
+            char response = (char) in.read();
+            System.out.println(response);
 
-            if(responseCode == '0'){
+            if (response == '0') {
                 System.out.println("OK");
             } else {
                 System.out.println("ne OK");
             }
 
+            return String.format("Response from '%s:%d': %s", host, port, response);
         } catch (IOException e) {
-            e.printStackTrace();
+            return String.format("Something went wrong with reading/writing to socket '%s'", socket.getLocalAddress());
         }
     }
 }

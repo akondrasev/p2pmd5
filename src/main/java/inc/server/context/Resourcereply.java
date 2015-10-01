@@ -1,6 +1,5 @@
 package inc.server.context;
 
-import inc.ui.UICmd;
 import inc.util.Commands;
 import inc.util.Util;
 
@@ -9,11 +8,11 @@ import java.util.Map;
 //TODO get appropriate task md5
 public class Resourcereply implements ServerCommand {
     @Override
-    public String executeCommand(Map<String, Object> request) {
+    public String executeCommand(Map<String, String> request) {
         Commands commander = new Commands();
-        String toPort = (String) request.get("port");
-        String toIp = (String) request.get("ip");
-        String requestId = (String) request.get("id");
+        String toPort = request.get("port");
+        String toIp = request.get("ip");
+        String requestId = request.get("id");
 
         String sendip = Util.getCurrentHostIp();
         int port = new Commands().getServer().getPort();

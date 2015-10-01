@@ -3,7 +3,6 @@ package inc.util;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -11,12 +10,13 @@ import static org.junit.Assert.assertEquals;
 public class UtilTest {
 
     @Before
-    public void setUp(){
+    public void setUp() {
 
     }
 
+
     @Test
-    public void parseArrayToGetParamsTest(){
+    public void parseArrayToGetParamsTest() {
         String[] params = new String[3];
         params[0] = "param1=val1";
         params[1] = "param2=val2";
@@ -26,7 +26,7 @@ public class UtilTest {
     }
 
     @Test
-    public void testParseArrayToPostJson(){
+    public void testParseArrayToPostJson() {
         String[] params = new String[3];
         params[0] = "param1=val1";
         params[1] = "param2=val2";
@@ -38,12 +38,12 @@ public class UtilTest {
     @Test
     public void testParseGetRequest() throws Exception {
         String request = "GET /resource?sendip=55.66.77.88&sendport=6788&ttl=5&id=wqeqwe23&noask=11.22.33.44_345&noask=111.222.333.444_223";
-        Map<String, Object> result = Util.parseGetRequest(request);
+        Map<String, String> result = Util.parseGetRequest(request);
 
-        assertEquals("id param assertion","wqeqwe23", result.get("id"));
-        assertEquals("sendip param assertion","55.66.77.88", result.get("sendip"));
-        assertEquals("sendport param assertion","6788", result.get("sendport"));
-        assertEquals("ttl param assertion","5", result.get("ttl"));
+        assertEquals("id param assertion", "wqeqwe23", result.get("id"));
+        assertEquals("sendip param assertion", "55.66.77.88", result.get("sendip"));
+        assertEquals("sendport param assertion", "6788", result.get("sendport"));
+        assertEquals("ttl param assertion", "5", result.get("ttl"));
     }
 
     @Test
@@ -66,7 +66,6 @@ public class UtilTest {
         url = "www.facebook.com/";
         result = Util.getHostInUrl(url);
         assertEquals("facebook.com", result);
-
 
 
         url = "www.facebook.com";
@@ -114,18 +113,18 @@ public class UtilTest {
 
     @Test
     public void testGetRequestParamsFromJson() throws Exception {
-        Map<String, Object> result = Util.getRequestParamsFromJson("{\"ip\":\"55.66.77.88\", \"port\":\"6788\", \"id\": \"asasasas\", \"resource\": 100, \"ranges\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"] }");
+        Map<String, String> result = Util.getRequestParamsFromJson("{\"ip\":\"55.66.77.88\", \"port\":\"6788\", \"id\": \"asasasas\", \"resource\": 100, \"ranges\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"] }");
         assertEquals("55.66.77.88", result.get("ip"));
         assertEquals("6788", result.get("port"));
         assertEquals("asasasas", result.get("id"));
-        assertEquals(100.0, result.get("resource"));
+        assertEquals("100", result.get("resource"));
 
-        ArrayList<String> rangesList = new ArrayList<>();
-        rangesList.add("ax?o?ssss");
-        rangesList.add("aa");
-        rangesList.add("ab");
-        rangesList.add("ac");
-        rangesList.add("ad");
-        assertEquals(rangesList, result.get("ranges"));
+        assertEquals("[ax?o?ssss,aa,ab,ac,ad]", result.get("ranges"));
+    }
+
+    @Test
+    public void testReadJsonFromFile() {
+        String result = Util.readJsonFromFile("machines.txt");
+        assertEquals("[[\"127.0.0.1\",\"1111\"],[\"127.0.0.1\",\"2222\"],[\"127.0.0.1\",\"3333\"]]", result);
     }
 }

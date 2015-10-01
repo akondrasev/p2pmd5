@@ -10,13 +10,13 @@ import java.util.Map;
 public class Resource implements ServerCommand {
 
     @Override
-    public String executeCommand(Map<String, Object> request) {
+    public String executeCommand(Map<String, String> request) {
         Commands commander = new Commands();
 
-        String toIp = (String) request.get("sendip");
-        String toPort = (String) request.get("sendport");
-        String requestId = (String) request.get("id");
-        String ttl = (String) request.get("ttl");
+        String toIp = request.get("sendip");
+        String toPort = request.get("sendport");
+        String requestId = request.get("id");
+        String ttl = request.get("ttl");
 
         int ttlValue = Integer.parseInt(ttl);
         ttlValue--;
@@ -27,15 +27,15 @@ public class Resource implements ServerCommand {
                 "POST", String.format("%s:%s/resourcereply", toIp, toPort),
                 String.format("ip=%s", sendip),
                 String.format("port=%s", port),
-                String.format("id=%s",requestId),
+                String.format("id=%s", requestId),
                 String.format("resource=%s", 100)
-                );
+        );
 
-        if(ttlValue > 1 ){
-            for(int i = 0; i < UICmd.knownUrls.length; i++){
+        if (ttlValue > 1) {
+            for (int i = 0; i < UICmd.knownUrls.length; i++) {
                 commander.sendRequest(
                         "GET",
-                        String.format("%s/resource",UICmd.knownUrls[i]),
+                        String.format("%s/resource", UICmd.knownUrls[i]),
                         String.format("sendip=%s", sendip),
                         String.format("sendport=%s", port),
                         String.format("ttl=%s", ttlValue),

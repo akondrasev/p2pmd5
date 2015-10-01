@@ -1,7 +1,8 @@
 package inc.util;
 
-import com.google.gson.Gson;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -13,12 +14,12 @@ public class Util {
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
 
-    public static String getCommandFromInput(String input) {
+    public static synchronized String getCommandFromInput(String input) {
         String[] inputWords = input.trim().split(" ");
         return inputWords[0].trim();
     }
 
-    public static String getHostInUrl(String url) {
+    public static synchronized String getHostInUrl(String url) {
         String result;
 
         String[] tmp = url.split("http://");
@@ -33,7 +34,7 @@ public class Util {
         return result;
     }
 
-    public static String getCurrentHostIp(){
+    public static synchronized String getCurrentHostIp() {
         String host = null;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
@@ -45,28 +46,42 @@ public class Util {
     }
 
 
-    public static Map<String, Object> getRequestParamsFromJson(String json){
-        Gson gson = new Gson();
-        Class type = TreeMap.class;
+    public static synchronized Map<String, String> getRequestParamsFromJson(String json) {
+        Map<String, String> result = new TreeMap<>();
 
-        Map<String, Object> result = (Map<String, Object>) gson.fromJson(json, type);
+        json = json.trim().substring(1, json.length() - 1).trim().replaceAll("\"", "").replaceAll(" ", "");
+
+        String[] tmp = json.split(",");
+        String lastKey = null;
+        for (String currentString : tmp) {
+            String[] key_valuePair = currentString.split(":");
+
+            if (key_valuePair.length == 1) {
+                String value = result.get(lastKey);
+                value = value + "," + key_valuePair[0];
+                result.put(lastKey, value);
+                continue;
+            }
+            result.put(key_valuePair[0], key_valuePair[1]);
+            lastKey = key_valuePair[0];
+        }
         return result;
     }
 
-    private static String clearListsFromSpaces(String input, int startIndex){
+    private static synchronized String clearListsFromSpaces(String input, int startIndex) {
         int openList = input.indexOf('[', startIndex);
-        if(openList > -1){
+        if (openList > -1) {
             int closeList = input.indexOf(']', startIndex);
-            String tmp = input.substring(openList-1, closeList+1);
+            String tmp = input.substring(openList - 1, closeList + 1);
 
             input = input.replace(tmp, tmp.trim().replaceAll(" ", ""));
-            return clearListsFromSpaces(input, closeList +1);
+            return clearListsFromSpaces(input, closeList + 1);
         } else {
             return input;
         }
     }
 
-    public static String[] getParamsFromInput(String input) {
+    public static synchronized String[] getParamsFromInput(String input) {
         input = clearListsFromSpaces(input, 0);
 
         String[] inputWords = input.trim().split(" ");
@@ -83,7 +98,7 @@ public class Util {
     }
 
 
-    public static String parseStringArrayToJson(String... params) {//FIXME
+    public static synchronized String parseStringArrayToJson(String... params) {//FIXME
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("{");
@@ -94,11 +109,11 @@ public class Util {
             stringBuilder.append("\"");
             stringBuilder.append(key);
             stringBuilder.append("\":");
-            if(!value.startsWith("[")){
+            if (!value.startsWith("[")) {
                 stringBuilder.append("\"");
             }
             stringBuilder.append(value);
-            if(!value.endsWith("]")){
+            if (!value.endsWith("]")) {
                 stringBuilder.append("\"");
             }
 
@@ -112,7 +127,7 @@ public class Util {
         return stringBuilder.toString();
     }
 
-    public static String parseArrayToGetParams(String... params) {
+    public static synchronized String parseArrayToGetParams(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < params.length; i++) {
             stringBuilder.append(String.valueOf(params[i]));
@@ -122,12 +137,10 @@ public class Util {
             }
         }
 
-        String result = stringBuilder.toString().length() > 0 ? stringBuilder.toString() : null;
-
-        return result;
+        return stringBuilder.toString().length() > 0 ? stringBuilder.toString() : null;
     }
 
-    public static Map<String, Object> parseGetRequest(String request) {
+    public static synchronized Map<String, String> parseGetRequest(String request) {
         if (request == null || request.equals("/") || request.equals("")) {
             return null;
         }
@@ -137,7 +150,7 @@ public class Util {
         int index = requestParams[0].indexOf("?") + 1;
         requestParams[0] = requestParams[0].substring(index);
 
-        Map<String, Object> result = new TreeMap<>();
+        Map<String, String> result = new TreeMap<>();
         for (String requestParam : requestParams) {
             String[] keyValue_pair = requestParam.split("=");
             String key = keyValue_pair[0];
@@ -149,7 +162,7 @@ public class Util {
         return result;
     }
 
-    public static String getHostContext(String host) {
+    public static synchronized String getHostContext(String host) {
         String[] arr = host.split("/");
 
         if (arr.length <= 1) {
@@ -157,5 +170,37 @@ public class Util {
         }
 
         return "/" + arr[1].split("\\?")[0];
+    }
+
+    public static synchronized String readJsonFromFile(String file) {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (FileNotFoundException ignored) {
+            ignored.printStackTrace();
+        }
+        StringBuilder result = new StringBuilder();
+
+        if (fileInputStream != null) {
+            int available = -1;
+            try {
+                available = fileInputStream.available();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (available > -1) {
+                for (int i = 0; i < available; i++) {
+                    try {
+                        char c = (char) fileInputStream.read();
+                        result.append(c);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return result.toString();
     }
 }

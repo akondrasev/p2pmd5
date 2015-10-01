@@ -13,10 +13,10 @@ import java.util.TreeMap;
 
 public class HttpRequestHandler implements Runnable {
 
-    private Socket socket;
     private static final String ZERO = "0";
+    private Socket socket;
     private String command;
-    private Map<String, Object> requestParams;
+    private Map<String, String> requestParams;
 
     private Map<String, ServerCommand> allowedContexts;
 

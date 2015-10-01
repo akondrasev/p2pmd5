@@ -22,39 +22,33 @@ public class Server implements Runnable {
         return port;
     }
 
-    public ServerSocket getServerSocket() {
-        return serverSocket;
-    }
-
     public void stop() {
         isTerminated = true;
 
-        if (thisThread != null) {
-            thisThread.interrupt();
-            if (serverSocket != null) {
-                try {
-                    serverSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException ignored) {
             }
         }
         System.out.println("Server has been stopped");
     }
 
-    public void start() {
+    public void start(int port) {
         isTerminated = false;
+        this.port = port;
 
         thisThread = new Thread(this, "Server thread");
         thisThread.start();
-        System.out.println(String.format("Server started at port '%d'", port));
+        System.out.println(String.format("Server started at port '%d'", this.port));
     }
 
-    private void runServer(int port) {
+    @Override
+    public void run() {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Cannot start server on port " + port);
             return;
         }
 
@@ -79,15 +73,5 @@ public class Server implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    @Override
-    public void run() {
-        runServer(port);
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 }
