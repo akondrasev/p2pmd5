@@ -1,6 +1,7 @@
 package inc;
 
 import inc.util.Commands;
+import inc.util.Util;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -70,18 +71,12 @@ public class FxApplication extends Application {
             } catch (NumberFormatException e) {
                 port = 1215;
             }
-            commander.startServer(port);
+            textArea.appendText(commander.startServer(port) + Util.CRLF);
         });
 
-        stopServerButton.setOnAction(event -> commander.stopServer()
-        );
-
-        System.setOut(new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                textArea.appendText(String.valueOf((char) b));
-            }
-        }));
+        stopServerButton.setOnAction(event -> {
+            textArea.appendText(commander.stopServer() + Util.CRLF);
+        });
 
         primaryStage.show();
         //TODO make server close on exit

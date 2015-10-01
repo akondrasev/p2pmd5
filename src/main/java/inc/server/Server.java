@@ -5,73 +5,56 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server implements Runnable {
-
-    private int port;
-    private boolean isTerminated = true;
-    private Thread thisThread;
+    private Thread serverThread;
+    private boolean isRunning;
     private ServerSocket serverSocket;
+    private int port;
 
-    public Server() {
+    public boolean isRunning() {
+        return isRunning;
     }
 
-    public boolean isTerminated() {
-        return isTerminated;
+    public void run() {
+        while (isRunning) {
+            try {
+                Socket socket = serverSocket.accept();
+                new Thread(new HttpRequestHandler(socket)).start();
+            } catch (IOException ignored) {
+            }
+        }
+
+        System.out.println("Server has stopped working");
+    }
+
+    public void stop() {
+        if (!isRunning) {
+            return;
+        }
+
+        isRunning = false;
+        try {
+            serverSocket.close();
+        } catch (IOException ignored) {}
+    }
+
+    public void start(int port) {
+        if (isRunning) {
+            return;
+        }
+        isRunning = true;
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (IOException ignored) {}
+
+        serverThread = new Thread(this);
+        serverThread.start();
     }
 
     public int getPort() {
         return port;
     }
 
-    public void stop() {
-        isTerminated = true;
-
-        if (serverSocket != null) {
-            try {
-                serverSocket.close();
-            } catch (IOException ignored) {
-            }
-        }
-        System.out.println("Server has been stopped");
-    }
-
-    public void start(int port) {
-        isTerminated = false;
+    public void setPort(int port) {
         this.port = port;
-
-        thisThread = new Thread(this, "Server thread");
-        thisThread.start();
-        System.out.println(String.format("Server started at port '%d'", this.port));
-    }
-
-    @Override
-    public void run() {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.out.println("Cannot start server on port " + port);
-            return;
-        }
-
-        while (!isTerminated) {
-
-            Socket socket;
-
-            try {
-                socket = serverSocket.accept();
-            } catch (IOException e) {
-                System.out.println("Cannot accept socket.");
-                continue;
-            }
-
-            HttpRequestHandler httpRequestHandler = new HttpRequestHandler(socket);
-            Thread thread = new Thread(httpRequestHandler);
-            thread.start();
-        }
-
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

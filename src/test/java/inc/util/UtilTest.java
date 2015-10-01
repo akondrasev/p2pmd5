@@ -38,7 +38,7 @@ public class UtilTest {
     @Test
     public void testParseGetRequest() throws Exception {
         String request = "GET /resource?sendip=55.66.77.88&sendport=6788&ttl=5&id=wqeqwe23&noask=11.22.33.44_345&noask=111.222.333.444_223";
-        Map<String, String> result = Util.parseGetRequest(request);
+        Map<String, String> result = Util.getRequestFromStringQuery(request);
 
         assertEquals("id param assertion", "wqeqwe23", result.get("id"));
         assertEquals("sendip param assertion", "55.66.77.88", result.get("sendip"));
@@ -88,11 +88,11 @@ public class UtilTest {
     @Test
     public void testGetHostContext() throws Exception {
         String context = "/";
-        assertEquals(context, Util.getHostContext("localhost"));
-        assertEquals(context, Util.getHostContext("localhost/"));
+        assertEquals(context, Util.getRequestContext("localhost"));
+        assertEquals(context, Util.getRequestContext("localhost/"));
 
         context = "/resource";
-        assertEquals(context, Util.getHostContext("localhost/resource"));
+        assertEquals(context, Util.getRequestContext("localhost/resource"));
     }
 
 
@@ -113,7 +113,7 @@ public class UtilTest {
 
     @Test
     public void testGetRequestParamsFromJson() throws Exception {
-        Map<String, String> result = Util.getRequestParamsFromJson("{\"ip\":\"55.66.77.88\", \"port\":\"6788\", \"id\": \"asasasas\", \"resource\": 100, \"ranges\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"] }");
+        Map<String, String> result = Util.getRequestFromJson("{\"ip\":\"55.66.77.88\", \"port\":\"6788\", \"id\": \"asasasas\", \"resource\": 100, \"ranges\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"] }");
         assertEquals("55.66.77.88", result.get("ip"));
         assertEquals("6788", result.get("port"));
         assertEquals("asasasas", result.get("id"));

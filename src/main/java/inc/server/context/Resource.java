@@ -18,8 +18,12 @@ public class Resource implements ServerCommand {
         String requestId = request.get("id");
         String ttl = request.get("ttl");
 
-        int ttlValue = Integer.parseInt(ttl);
-        ttlValue--;
+        int ttlValue = 0;
+        if(!(ttl == null || ttl.equals(""))){
+            ttlValue = Integer.parseInt(ttl);
+            ttlValue--;
+        }
+
 
         String sendip = Util.getCurrentHostIp();
         int port = commander.getServer().getPort();

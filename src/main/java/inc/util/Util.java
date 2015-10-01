@@ -46,7 +46,7 @@ public class Util {
     }
 
 
-    public static synchronized Map<String, String> getRequestParamsFromJson(String json) {
+    public static synchronized Map<String, String> getRequestFromJson(String json) {
         Map<String, String> result = new TreeMap<>();
 
         json = json.trim().substring(1, json.length() - 1).trim().replaceAll("\"", "").replaceAll(" ", "");
@@ -140,14 +140,21 @@ public class Util {
         return stringBuilder.toString().length() > 0 ? stringBuilder.toString() : null;
     }
 
-    public static synchronized Map<String, String> parseGetRequest(String request) {
-        if (request == null || request.equals("/") || request.equals("")) {
+    public static synchronized Map<String, String> getRequestFromStringQuery(String request) {
+        request = request.split("GET ")[1].split(" HTTP")[0].trim();
+
+        if (request.equals("/") || request.equals("")) {
             return null;
         }
 
         String[] requestParams = request.split("&");
 
         int index = requestParams[0].indexOf("?") + 1;
+
+        if(index == 0){
+            return null;
+        }
+
         requestParams[0] = requestParams[0].substring(index);
 
         Map<String, String> result = new TreeMap<>();
@@ -162,14 +169,14 @@ public class Util {
         return result;
     }
 
-    public static synchronized String getHostContext(String host) {
+    public static synchronized String getRequestContext(String host) {
         String[] arr = host.split("/");
 
         if (arr.length <= 1) {
             return "/";
         }
 
-        return "/" + arr[1].split("\\?")[0];
+        return "/" + arr[1].split("\\?")[0].split("HTTP")[0].trim();
     }
 
     public static synchronized String readJsonFromFile(String file) {

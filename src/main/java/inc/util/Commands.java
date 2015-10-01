@@ -29,7 +29,7 @@ public class Commands {
 
     public String stopServer() {
         synchronized (server){
-            if(!server.isTerminated()){
+            if(server.isRunning()){
                 server.stop();
                 return "Server stopped successfully";
             }
@@ -40,7 +40,7 @@ public class Commands {
 
     public String startServer(int port) {
         synchronized (server){
-            if(!server.isTerminated()){
+            if(server.isRunning()){
                 return "Server is already started";
             }
             server.start(port);
@@ -90,7 +90,7 @@ public class Commands {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream())
         ) {
-            String context = Util.getHostContext(url);
+            String context = Util.getRequestContext(url);
             String postData = Util.parseStringArrayToJson(params);
             out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
             out.write("Host: www." + url + Util.CRLF);
@@ -144,7 +144,7 @@ public class Commands {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream())
         ) {
-            String context = Util.getHostContext(url);
+            String context = Util.getRequestContext(url);
             String queryString = Util.parseArrayToGetParams(params);
 
             if(queryString != null){
