@@ -16,10 +16,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 public class FxApplication extends Application {
 
     private String machinesJson;
