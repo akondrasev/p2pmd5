@@ -18,11 +18,12 @@ import javafx.stage.Stage;
 
 public class FxApplication extends Application {
 
-    private String machinesJson;
+    private static String machinesJson;
 
     private Commands commander = new Commands();
 
     public static void main(String... args) {
+        machinesJson = Util.readJsonFromFile("machines.txt");
         launch(args);
     }
 
@@ -71,6 +72,7 @@ public class FxApplication extends Application {
         });
 
         stopServerButton.setOnAction(event -> textArea.appendText(commander.stopServer() + Util.CRLF));
+        textArea.appendText(String.format("Loaded IPs list: %s", machinesJson) + Util.CRLF);
 
         primaryStage.show();
         //TODO make server close on exit
