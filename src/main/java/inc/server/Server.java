@@ -22,8 +22,6 @@ public class Server implements Runnable {
             } catch (IOException ignored) {
             }
         }
-
-        System.out.println("Server has stopped working");
     }
 
     public void stop() {

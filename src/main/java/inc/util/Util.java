@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -17,6 +20,25 @@ public class Util {
     public static synchronized String getCommandFromInput(String input) {
         String[] inputWords = input.trim().split(" ");
         return inputWords[0].trim();
+    }
+
+    public static synchronized String[] getKnownComputersFromJson(String json){
+        json = json.replaceAll(" ", "");
+        json = json.replaceAll("\"", "");
+        json = json.substring(1, json.length() - 1);
+
+        String[] tmp = json.split("\\],\\[");
+        tmp[0] = tmp[0].replace("[","");
+        tmp[tmp.length-1] = tmp[tmp.length-1].replace("]","");
+
+
+        for (int i = 0; i<tmp.length; i++){
+            String current = tmp[i];
+            String[] ipPortPair = current.split(",");
+            tmp[i] = ipPortPair[0] + ":" + ipPortPair[1];
+        }
+
+        return tmp;
     }
 
     public static synchronized String getHostInUrl(String url) {

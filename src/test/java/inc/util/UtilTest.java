@@ -16,6 +16,13 @@ public class UtilTest {
 
 
     @Test
+    public void testGetKnownComputersFromJson(){
+        String[] result = Util.getKnownComputersFromJson("[[\"127.0.0.1\",\"1111\"],[\"127.0.0.1\",\"2222\"],[\"127.0.0.1\",\"3333\"]]");
+        assertEquals("127.0.0.1:1111", result[0]);
+    }
+
+
+    @Test
     public void parseArrayToGetParamsTest() {
         String[] params = new String[3];
         params[0] = "param1=val1";
