@@ -49,7 +49,9 @@ public class Util {
     public static synchronized Map<String, String> getRequestFromJson(String json) {
         Map<String, String> result = new TreeMap<>();
 
-        json = json.trim().substring(1, json.length() - 1).trim().replaceAll("\"", "").replaceAll(" ", "");
+        json = json.trim();
+        json = json.substring(1, json.length() - 1);
+        json = json.trim().replaceAll("\"", "").replaceAll(" ", "");
 
         String[] tmp = json.split(",");
         String lastKey = null;
@@ -62,7 +64,14 @@ public class Util {
                 result.put(lastKey, value);
                 continue;
             }
-            result.put(key_valuePair[0], key_valuePair[1]);
+
+            String existingValue = result.get(key_valuePair[0]);
+            if(existingValue != null){
+                existingValue += "," + key_valuePair[1];
+                result.put(key_valuePair[0], existingValue);
+            } else {
+                result.put(key_valuePair[0], key_valuePair[1]);
+            }
             lastKey = key_valuePair[0];
         }
         return result;
@@ -161,7 +170,13 @@ public class Util {
         for (String requestParam : requestParams) {
             String[] keyValue_pair = requestParam.split("=");
             String key = keyValue_pair[0];
-            String value = keyValue_pair[1];
+            String value = result.get(key);
+
+            if(value == null){
+                value = keyValue_pair[1];
+            } else {
+                value = value + "," + keyValue_pair[1];
+            }
 
             result.put(key, value);
         }

@@ -17,6 +17,7 @@ public class Resource implements ServerCommand {
         String toPort = request.get("sendport");
         String requestId = request.get("id");
         String ttl = request.get("ttl");
+        String noask = request.get("noask");
 
         int ttlValue = 0;
         if(!(ttl == null || ttl.equals(""))){
@@ -37,6 +38,7 @@ public class Resource implements ServerCommand {
 
         if (ttlValue > 1) {
             for (int i = 0; i < UICmd.knownUrls.length; i++) {
+                //TODO noask impl
                 commander.sendRequest(
                         "GET",
                         String.format("%s/resource", UICmd.knownUrls[i]),

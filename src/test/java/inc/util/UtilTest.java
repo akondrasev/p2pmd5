@@ -40,10 +40,12 @@ public class UtilTest {
         String request = "GET /resource?sendip=55.66.77.88&sendport=6788&ttl=5&id=wqeqwe23&noask=11.22.33.44_345&noask=111.222.333.444_223";
         Map<String, String> result = Util.getRequestFromStringQuery(request);
 
+        assert result != null;
         assertEquals("id param assertion", "wqeqwe23", result.get("id"));
         assertEquals("sendip param assertion", "55.66.77.88", result.get("sendip"));
         assertEquals("sendport param assertion", "6788", result.get("sendport"));
         assertEquals("ttl param assertion", "5", result.get("ttl"));
+        assertEquals("noask list", "11.22.33.44_345,111.222.333.444_223", result.get("noask"));
     }
 
     @Test
