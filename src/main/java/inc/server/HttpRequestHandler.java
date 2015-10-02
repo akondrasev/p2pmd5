@@ -69,9 +69,13 @@ public class HttpRequestHandler implements Runnable {
                 request = Util.getRequestFromJson(postData);
             }
 
-            processContext(context);
-
-            out.print(ZERO);
+            if(context.equals("/crack")){
+                new Crack().executeCommand(request);
+                out.print(new Crack().executeCommand(request));
+            } else {
+                processContext(context);
+                out.print(ZERO);
+            }
             out.flush();
         } catch (IOException ignored) {}
     }

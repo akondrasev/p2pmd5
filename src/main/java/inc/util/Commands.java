@@ -1,5 +1,6 @@
 package inc.util;
 
+import inc.controller.Command;
 import inc.server.Server;
 
 import java.io.BufferedReader;
@@ -20,8 +21,47 @@ public class Commands {
     }
 
     public static String[] computers;
+    private static boolean working = false;
+    private static boolean done = false;
+    private static String result = "";
 
     public Commands() {
+    }
+
+    public String getResult() {
+        synchronized (Commands.class){
+            return result;
+        }
+    }
+
+    public void setResult(String result) {
+        synchronized (Commands.class){
+            Commands.result = result;
+        }
+    }
+
+    public static boolean isDone() {
+        synchronized (Commands.class){
+            return done;
+        }
+    }
+
+    public static void setDone(boolean isdone) {
+        synchronized (Commands.class){
+            done = isdone;
+        }
+    }
+
+    public void setWorking(boolean isWorking){
+        synchronized (Commands.class){
+            working = isWorking;
+        }
+    }
+
+    public boolean isWorking(){
+        synchronized (Commands.class){
+            return working;
+        }
     }
 
     public Server getServer() {

@@ -10,25 +10,29 @@ import java.util.Map;
 public class Crack implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
+        Commands.setDone(false);
         String md5 = request.get("md5");
 
         Commands commander = new Commands();
         String sendip = Util.getCurrentIp();
         int sendport = new Commands().getServer().getPort();
         String requestId = "ffff";
-        int ttlValue = 3;
+        int ttlValue = 4;
 
-        for(int i = 0; i < UICmd.knownUrls.length; i++){
-            commander.sendRequest("GET", String.format("%s/resource", UICmd.knownUrls[i]),
-                    String.format("sendip=%s", sendip),
-                    String.format("sendport=%s", sendport),
-                    String.format("id=%s", requestId),
-                    String.format("ttl=%s", ttlValue)
-            );
+        commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
+                String.format("sendip=%s", sendip),
+                String.format("sendport=%s", sendport),
+                String.format("id=%s", requestId),
+                String.format("ttl=%s", ttlValue),
+                String.format("noask=%s", String.format("%s_%s",sendip, sendport))
+                );
+
+        while(!Commands.isDone()){
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException ignored) {}
         }
 
-        //TODO sleep until answer done
-
-        return "cracked! " + md5;
+        return "cracked! " + commander.getResult();
     }
 }

@@ -30,15 +30,22 @@ public class Resource implements ServerContext {
 
         String sendip = Util.getCurrentIp();
         int port = commander.getServer().getPort();
-        commander.sendRequest(
-                "POST", String.format("%s:%s/resourcereply", toIp, toPort),
-                String.format("ip=%s", sendip),
-                String.format("port=%s", port),
-                String.format("id=%s", requestId),
-                String.format("resource=%s", 100)
-        );
+        if(!commander.isWorking() && !String.format("%s:%s", sendip, port).equals(String.format("%s:%s", toIp, toPort))){
+            commander.sendRequest(
+                    "POST", String.format("%s:%s/resourcereply", toIp, toPort),
+                    String.format("ip=%s", sendip),
+                    String.format("port=%s", port),
+                    String.format("id=%s", requestId),
+                    String.format("resource=%s", 100)
+            );
+        }
 
-        String[] allParamsForResourceRequest = new String[4 + noaskAddresses.length + 1];
+        int bonusLength = 0;
+        if(noaskAddresses != null){
+            bonusLength = noaskAddresses.length;
+        }
+
+        String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
         allParamsForResourceRequest[0] = String.format("sendip=%s", sendip);
         allParamsForResourceRequest[1] = String.format("sendport=%s", port);
         allParamsForResourceRequest[2] = String.format("ttl=%s", ttlValue);
@@ -61,7 +68,12 @@ public class Resource implements ServerContext {
         return "all resources done";
     }
 
-    private void populateNoaskParams(String noask, String[] allParamsForResourceRequest, int i) {
+    protected void populateNoaskParams(String noask, String[] allParamsForResourceRequest, int i) {
+
+        if(noask == null){
+            return;
+        }
+
         String[] noaskParams = noask.split(",");
 
         for(String noaskParam : noaskParams){
@@ -69,7 +81,12 @@ public class Resource implements ServerContext {
         }
     }
 
-    private boolean validateAddress(String address, String[] noAvailableAddresses){
+    protected boolean validateAddress(String address, String[] noAvailableAddresses){
+
+        if(noAvailableAddresses == null){
+            return true;
+        }
+
         for(String s : noAvailableAddresses){
             if(s.equals(address)){
                 return false;
@@ -80,6 +97,10 @@ public class Resource implements ServerContext {
     }
 
     private String[] getNoaskAddresses(String noaskListCommaSeparated){
+        if(noaskListCommaSeparated == null){
+            return null;
+        }
+
         String[] list = noaskListCommaSeparated.split(",");
         String[] result = new String[list.length];
 
