@@ -2,12 +2,8 @@ package inc;
 
 import inc.util.Commands;
 import inc.util.Util;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,14 +18,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Timer;
-import java.util.TimerTask;
 
+//http://127.0.0.1:1111/resource?sendip=127.0.0.1&sendport=1111&ttl=3&id=123&noask=192.168.10.76_1111&noask=127.0.0.1_1111
 public class FxApplication extends Application {
 
     private Commands commander = new Commands();
