@@ -57,7 +57,7 @@ public class HttpRequestHandler implements Runnable {
 
                 StringBuilder stringBuilder = new StringBuilder();
                 int c;
-                for (int i = 0; i < contentLength; i++) {
+                for (int i = 0; i < contentLength + 2; i++) {
                     c = in.read();
                     stringBuilder.append((char) c);
                 }

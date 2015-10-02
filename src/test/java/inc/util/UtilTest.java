@@ -121,14 +121,15 @@ public class UtilTest {
     }
 
     @Test
-    public void testGetRequestParamsFromJson() throws Exception {
-        Map<String, String> result = Util.getRequestFromJson("{\"ip\":\"55.66.77.88\", \"port\":\"6788\", \"id\": \"asasasas\", \"resource\": 100, \"ranges\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"] }");
-        assertEquals("55.66.77.88", result.get("ip"));
-        assertEquals("6788", result.get("port"));
-        assertEquals("asasasas", result.get("id"));
-        assertEquals("100", result.get("resource"));
+    public void testGetRequestFromJson() throws Exception {
+        Map<String, String> result = Util.getRequestFromJson(
+                "{\"ip\":\"192.168.10.76\", \"port\":\"1111\", \"id\":\"123\", \"md5\":\"hash\", \"ranges\":[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"], \"wildcard\":\"?\", \"symbolrange\":[[3,10], [100,150]]}");
 
-        assertEquals("[ax?o?ssss,aa,ab,ac,ad]", result.get("ranges"));
+        assertEquals("192.168.10.76", result.get("ip"));
+        assertEquals("1111", result.get("port"));
+        assertEquals("123", result.get("id"));
+        assertEquals("[ax?o?ssss,aa,ab,ab]", result.get("ranges"));
+        assertEquals("[[3,10],[100,150]]", result.get("symbolrange"));
     }
 
     @Test

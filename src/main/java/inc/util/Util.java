@@ -65,14 +65,15 @@ public class Util {
     }
 
 
-    public static synchronized Map<String, String> getRequestFromJson(String json) {
+    public static synchronized Map<String, String> getRequestFromJson(String json) {//FIXME
         Map<String, String> result = new TreeMap<>();
+        String tempJson = json.trim();
+        tempJson = tempJson.replaceAll("\"", "");
+        tempJson = tempJson.replaceAll(" ", "");
+        tempJson = tempJson.substring(1, tempJson.length()-1);
 
-        json = json.trim();
-        json = json.substring(1, json.length() - 1);
-        json = json.trim().replaceAll("\"", "").replaceAll(" ", "");
 
-        String[] tmp = json.split(",");
+        String[] tmp = tempJson.split(",");
         String lastKey = null;
         for (String currentString : tmp) {
             String[] key_valuePair = currentString.split(":");
