@@ -10,6 +10,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class Commands {
 
@@ -17,6 +18,8 @@ public class Commands {
     static {
         server = new Server();
     }
+
+    public static String[] computers;
 
     public Commands() {
     }
@@ -36,6 +39,12 @@ public class Commands {
 
             return "Server is not running yet";
         }
+    }
+
+    public String readConfigFromFile(String fileName){
+        String machinesJson = Util.readJsonFromFile(fileName);
+        computers = Util.getKnownComputersFromJson(machinesJson);
+        return "Loaded IPs are: " + Arrays.toString(computers);
     }
 
     public String startServer(int port) {
@@ -76,7 +85,7 @@ public class Commands {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
-            System.out.println("Cannot connect to host " +  e.getMessage());
+            System.out.println("Cannot connect to host");
             return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
             System.out.println("Unknown host, check spelling");
@@ -111,7 +120,7 @@ public class Commands {
             } else {
                 System.out.println("ne OK");
             }
-            return String.format("Response from '%s:%d': %s", host, port, response);
+            return String.valueOf(response);
         } catch (IOException e) {
             return String.format("Something went wrong with reading/writing to socket '%s'", socket.getLocalAddress());
         }
@@ -132,7 +141,7 @@ public class Commands {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
-            System.out.println("Cannot connect to host " +  e.getMessage());
+            System.out.println("Cannot connect to host");
             return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
             System.out.println("Unknown host, check spelling");
@@ -168,7 +177,7 @@ public class Commands {
                 System.out.println("ne OK");
             }
 
-            return String.format("Response from '%s:%d': %s", host, port, response);
+            return String.valueOf(response);
         } catch (IOException e) {
             return String.format("Something went wrong with reading/writing to socket '%s'", socket.getLocalAddress());
         }

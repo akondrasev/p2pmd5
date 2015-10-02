@@ -7,7 +7,7 @@ import inc.util.Util;
 import java.util.Map;
 
 //TODO crack?md5=asdasdasddasdasd - inital request - sync
-public class Crack implements ServerCommand {
+public class Crack implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
         String md5 = request.get("md5");

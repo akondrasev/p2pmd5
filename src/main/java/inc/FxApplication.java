@@ -2,33 +2,35 @@ package inc;
 
 import inc.util.Commands;
 import inc.util.Util;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FxApplication extends Application {
-
-    private static String machinesJson;
-    public static final String[] computers;
-    static {
-        machinesJson = Util.readJsonFromFile("machines.txt");
-        computers = Util.getKnownComputersFromJson(machinesJson);
-    }
 
     private Commands commander = new Commands();
 
@@ -38,37 +40,24 @@ public class FxApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(10);
-        gridPane.setVgap(10);
-        gridPane.setPadding(new Insets(25, 25, 25, 25));
-
-        Scene scene = new Scene(gridPane, 800, 300);
-
-        primaryStage.setTitle("Peer to Peer (md5)");
-        primaryStage.setScene(scene);
-
-        Text sceneTitle = new Text("Choose Action");
+        Text serverIndicator = new Text("Stopped");
+        serverIndicator.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
+        serverIndicator.setFill(Color.RED);
+        Text sceneTitle = new Text("Peer to Peer MD5");
         sceneTitle.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
-        gridPane.add(sceneTitle, 0, 0, 2, 1);
 
+        Text machinesText = new Text("Machines:");
+        machinesText.setFill(Color.BLUEVIOLET);
+        machinesText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        Label total = new Label("Port:");
-        gridPane.add(total, 0, 1);
-
+        Label portLabel = new Label("Port:");
         TextField textFieldPort = new TextField();
-        gridPane.add(textFieldPort, 1, 1);
+        textFieldPort.setMaxWidth(50);
         Button startServerButton = new Button("Start Server");
         startServerButton.setDefaultButton(true);
-        gridPane.add(startServerButton, 2, 1);
         Button stopServerButton = new Button("Stop Server");
-        gridPane.add(stopServerButton, 3, 1);
-        stopServerButton.cancelButtonProperty();
-
         TextArea textArea = new TextArea();
-        textArea.setWrapText(true);
-        gridPane.add(textArea, 1, 2);
+        textArea.setEditable(false);
 
         startServerButton.setOnAction(event -> {
             int port;
@@ -78,10 +67,16 @@ public class FxApplication extends Application {
                 port = 1215;
             }
             textArea.appendText(commander.startServer(port) + Util.CRLF);
+            serverIndicator.setText("Started: " + port);
+            serverIndicator.setFill(Color.GREEN);
         });
 
-        stopServerButton.setOnAction(event -> textArea.appendText(commander.stopServer() + Util.CRLF));
-        textArea.appendText(String.format("Loaded IPs list: %s", Arrays.toString(computers)) + Util.CRLF);
+        stopServerButton.setOnAction(event -> {
+            textArea.appendText(commander.stopServer() + Util.CRLF);
+            serverIndicator.setText("Stopped");
+            serverIndicator.setFill(Color.RED);
+        });
+        textArea.appendText(commander.readConfigFromFile("machines.txt") + Util.CRLF);
 
         primaryStage.show();
         primaryStage.setOnCloseRequest(t -> {
@@ -89,5 +84,42 @@ public class FxApplication extends Application {
             Platform.exit();
             System.exit(0);
         });
+
+        System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                Platform.runLater(() -> textArea.appendText(String.valueOf((char) b)));
+            }
+        }));
+
+
+        GridPane pane = new GridPane();
+        pane.setPadding(new Insets(25));
+        pane.setHgap(10);
+        pane.setVgap(12);
+
+        Scene scene = new Scene(pane, 800, 300);
+
+        primaryStage.setTitle("Peer to Peer (md5)");
+        primaryStage.setScene(scene);
+
+        HBox hBox = new HBox();
+        hBox.setSpacing(5);
+        hBox.setPadding(new Insets(5));
+        hBox.getChildren().addAll(portLabel, textFieldPort, startServerButton, stopServerButton);
+        pane.add(sceneTitle, 1,1,1,1);
+        pane.add(hBox, 1, 2, 2, 1);
+        pane.add(textArea, 3, 1, 1, 5);
+        pane.add(serverIndicator, 3, 6);
+        pane.add(machinesText, 1, 3);
+
+        VBox vBox = new VBox();
+        for (String ip : Commands.computers){
+            Text comp = new Text(ip);
+            comp.setFill(Color.VIOLET);
+            vBox.getChildren().add(comp);
+        }
+
+        pane.add(vBox, 1, 4, 1, 5);
     }
 }

@@ -14,7 +14,7 @@ public class HttpRequestHandler implements Runnable {
     private Socket socket;
     private Map<String, String> request;
 
-    private Map<String, ServerCommand> allowedContexts;
+    private Map<String, ServerContext> allowedContexts;
 
     public HttpRequestHandler(Socket socket) {
         this.socket = socket;
@@ -86,14 +86,14 @@ public class HttpRequestHandler implements Runnable {
             return;
         }
 
-        ServerCommand serverCommand = allowedContexts.get(context);
+        ServerContext serverContext = allowedContexts.get(context);
 
 
-        if(serverCommand == null){
+        if(serverContext == null){
             System.out.println(String.format("\nUnknown request context '%s'\n", context));
             return;
         }
 
-        serverCommand.executeCommand(request);
+        serverContext.executeCommand(request);
     }
 }

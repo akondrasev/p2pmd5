@@ -6,7 +6,7 @@ import inc.util.Util;
 import java.util.Map;
 
 //TODO get appropriate task md5
-public class Resourcereply implements ServerCommand {
+public class Resourcereply implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
         Commands commander = new Commands();

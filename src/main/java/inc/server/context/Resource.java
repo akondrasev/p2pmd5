@@ -1,14 +1,13 @@
 package inc.server.context;
 
 import inc.FxApplication;
-import inc.ui.UICmd;
 import inc.util.Commands;
 import inc.util.Util;
 
 import java.util.Map;
 
 //post request back {"ip": "55.66.77.88", "port": "6788", "id": "asasasas", "resource": 100 }
-public class Resource implements ServerCommand {
+public class Resource implements ServerContext {
 
     @Override
     public String executeCommand(Map<String, String> request) {
@@ -48,13 +47,13 @@ public class Resource implements ServerCommand {
         allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
 
         if (ttlValue > 1) {
-            for (int i = 0; i < FxApplication.computers.length; i++) {
+            for (int i = 0; i < Commands.computers.length; i++) {
 
-                if(validateAddress(FxApplication.computers[i], noaskAddresses)){
-                    commander.sendRequest("GET", String.format("%s/resource", FxApplication.computers[i]),
+                if(validateAddress(Commands.computers[i], noaskAddresses)){
+                    commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
                             allParamsForResourceRequest);
                 } else {
-                    System.out.println(String.format("noask %s -> do not send here", FxApplication.computers[i]));
+                    System.out.println(String.format("noask %s -> do not send here", Commands.computers[i]));
                 }
             }
         }
