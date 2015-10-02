@@ -10,4 +10,7 @@ public class UIWindow {
     private JTextField textField1;
     private JButton startButton;
     private JButton stopButton;
+    /*
+    very good UI code, continue
+     */
 }
