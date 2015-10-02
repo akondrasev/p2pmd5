@@ -27,9 +27,14 @@ public class Crack implements ServerContext {
                 String.format("noask=%s", String.format("%s_%s",sendip, sendport))
                 );
 
+        int seconds = 0;
         while(!Commands.isDone()){
+            if(seconds > 15){
+                return "timeout";
+            }
             try {
                 Thread.sleep(1000L);
+                seconds++;
             } catch (InterruptedException ignored) {}
         }
 
