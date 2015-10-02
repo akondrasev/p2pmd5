@@ -64,7 +64,7 @@ public class Commands {
 
     private String sendPost(String url, String... params) {
         int port = 80;
-        String host = Util.getHostInUrl(url);
+        String host = Util.getHostFromUrl(url);
         String[] address = host.split(":");
 
         if (address.length > 1) {
@@ -92,6 +92,8 @@ public class Commands {
         ) {
             String context = Util.getRequestContext(url);
             String postData = Util.parseStringArrayToJson(params);
+            System.out.println(String.format("post data: %s", postData));
+
             out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
             out.write("Host: www." + url + Util.CRLF);
             out.write("Content-length: " + postData.length() + Util.CRLF);
@@ -118,7 +120,7 @@ public class Commands {
     private String sendGet(String url, String... params) {
 
         int port = 80;
-        String host = Util.getHostInUrl(url);
+        String host = Util.getHostFromUrl(url);
         String[] address = host.split(":");
 
         if (address.length > 1) {
@@ -146,6 +148,7 @@ public class Commands {
         ) {
             String context = Util.getRequestContext(url);
             String queryString = Util.parseArrayToGetParams(params);
+            System.out.println(String.format("query string: %s", queryString));
 
             if(queryString != null){
                 context = context + "?" + queryString;

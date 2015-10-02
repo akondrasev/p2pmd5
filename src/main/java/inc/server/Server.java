@@ -40,6 +40,7 @@ public class Server implements Runnable {
             return;
         }
         isRunning = true;
+        this.port = port;
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException ignored) {}

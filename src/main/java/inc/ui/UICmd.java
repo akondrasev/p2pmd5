@@ -61,8 +61,8 @@ public class UICmd implements Runnable {
 
 
     public void doAction(String input) {
-        String command = Util.getCommandFromInput(input);
-        String[] params = Util.getParamsFromInput(input);
+        String command = Util.getCmd(input);
+        String[] params = Util.getCmdParams(input);
 
         if (CONSOLE_COMMAND_KILL.equals(command)) {
             isTerminated = true;

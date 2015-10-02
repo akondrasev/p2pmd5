@@ -15,7 +15,7 @@ public class GetNodeInfoCommand implements Command {
         }
 
         int port = server.getPort();
-        String host = Util.getCurrentHostIp();
+        String host = Util.getCurrentIp();
 
         System.out.println(String.format("%s:%d", host, port));
     }

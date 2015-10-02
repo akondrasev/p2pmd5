@@ -3,6 +3,8 @@ package inc;
 import inc.util.Commands;
 import inc.util.Util;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,15 +17,22 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+
+import java.util.Arrays;
 
 public class FxApplication extends Application {
 
     private static String machinesJson;
+    public static final String[] computers;
+    static {
+        machinesJson = Util.readJsonFromFile("machines.txt");
+        computers = Util.getKnownComputersFromJson(machinesJson);
+    }
 
     private Commands commander = new Commands();
 
     public static void main(String... args) {
-        machinesJson = Util.readJsonFromFile("machines.txt");
         launch(args);
     }
 
@@ -72,9 +81,13 @@ public class FxApplication extends Application {
         });
 
         stopServerButton.setOnAction(event -> textArea.appendText(commander.stopServer() + Util.CRLF));
-        textArea.appendText(String.format("Loaded IPs list: %s", machinesJson) + Util.CRLF);
+        textArea.appendText(String.format("Loaded IPs list: %s", Arrays.toString(computers)) + Util.CRLF);
 
         primaryStage.show();
-        //TODO make server close on exit
+        primaryStage.setOnCloseRequest(t -> {
+            commander.stopServer();
+            Platform.exit();
+            System.exit(0);
+        });
     }
 }

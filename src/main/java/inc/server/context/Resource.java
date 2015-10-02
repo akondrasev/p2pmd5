@@ -1,5 +1,6 @@
 package inc.server.context;
 
+import inc.FxApplication;
 import inc.ui.UICmd;
 import inc.util.Commands;
 import inc.util.Util;
@@ -19,6 +20,8 @@ public class Resource implements ServerCommand {
         String ttl = request.get("ttl");
         String noask = request.get("noask");
 
+        String[] noaskAddresses = getNoaskAddresses(noask);
+
         int ttlValue = 0;
         if(!(ttl == null || ttl.equals(""))){
             ttlValue = Integer.parseInt(ttl);
@@ -26,7 +29,7 @@ public class Resource implements ServerCommand {
         }
 
 
-        String sendip = Util.getCurrentHostIp();
+        String sendip = Util.getCurrentIp();
         int port = commander.getServer().getPort();
         commander.sendRequest(
                 "POST", String.format("%s:%s/resourcereply", toIp, toPort),
@@ -36,20 +39,56 @@ public class Resource implements ServerCommand {
                 String.format("resource=%s", 100)
         );
 
+        String[] allParamsForResourceRequest = new String[4 + noaskAddresses.length + 1];
+        allParamsForResourceRequest[0] = String.format("sendip=%s", sendip);
+        allParamsForResourceRequest[1] = String.format("sendport=%s", port);
+        allParamsForResourceRequest[2] = String.format("ttl=%s", ttlValue);
+        allParamsForResourceRequest[3] = String.format("id=%s", requestId);
+        populateNoaskParams(noask, allParamsForResourceRequest, 4);
+        allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
+
         if (ttlValue > 1) {
-            for (int i = 0; i < UICmd.knownUrls.length; i++) {
-                //TODO noask impl
-                commander.sendRequest(
-                        "GET",
-                        String.format("%s/resource", UICmd.knownUrls[i]),
-                        String.format("sendip=%s", sendip),
-                        String.format("sendport=%s", port),
-                        String.format("ttl=%s", ttlValue),
-                        String.format("id=%s", requestId)
-                );
+            for (int i = 0; i < FxApplication.computers.length; i++) {
+
+                if(validateAddress(FxApplication.computers[i], noaskAddresses)){
+                    commander.sendRequest("GET", String.format("%s/resource", FxApplication.computers[i]),
+                            allParamsForResourceRequest);
+                } else {
+                    System.out.println(String.format("noask %s -> do not send here", FxApplication.computers[i]));
+                }
             }
         }
 
         return "all resources done";
+    }
+
+    private void populateNoaskParams(String noask, String[] allParamsForResourceRequest, int i) {
+        String[] noaskParams = noask.split(",");
+
+        for(String noaskParam : noaskParams){
+            allParamsForResourceRequest[i++] = "noask=" + noaskParam;
+        }
+    }
+
+    private boolean validateAddress(String address, String[] noAvailableAddresses){
+        for(String s : noAvailableAddresses){
+            if(s.equals(address)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private String[] getNoaskAddresses(String noaskListCommaSeparated){
+        String[] list = noaskListCommaSeparated.split(",");
+        String[] result = new String[list.length];
+
+        for (int i = 0; i < list.length; i++){
+            String[] ipPortPair = list[i].split("_");
+            result[i] = ipPortPair[0]+":"+ipPortPair[1];
+        }
+
+        return result;
     }
 }

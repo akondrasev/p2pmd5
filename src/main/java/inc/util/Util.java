@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Util {
 
@@ -17,7 +14,7 @@ public class Util {
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
 
-    public static synchronized String getCommandFromInput(String input) {
+    public static synchronized String getCmd(String input) {
         String[] inputWords = input.trim().split(" ");
         return inputWords[0].trim();
     }
@@ -41,7 +38,7 @@ public class Util {
         return tmp;
     }
 
-    public static synchronized String getHostInUrl(String url) {
+    public static synchronized String getHostFromUrl(String url) {
         String result;
 
         String[] tmp = url.split("http://");
@@ -56,7 +53,7 @@ public class Util {
         return result;
     }
 
-    public static synchronized String getCurrentHostIp() {
+    public static synchronized String getCurrentIp() {
         String host = null;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
@@ -112,7 +109,7 @@ public class Util {
         }
     }
 
-    public static synchronized String[] getParamsFromInput(String input) {
+    public static synchronized String[] getCmdParams(String input) {
         input = clearListsFromSpaces(input, 0);
 
         String[] inputWords = input.trim().split(" ");
@@ -129,7 +126,7 @@ public class Util {
     }
 
 
-    public static synchronized String parseStringArrayToJson(String... params) {//FIXME
+    public static synchronized String parseStringArrayToJson(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("{");

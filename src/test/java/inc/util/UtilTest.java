@@ -43,7 +43,7 @@ public class UtilTest {
     }
 
     @Test
-    public void testParseGetRequest() throws Exception {
+    public void testGetRequestFromStringQuery() throws Exception {
         String request = "GET /resource?sendip=55.66.77.88&sendport=6788&ttl=5&id=wqeqwe23&noask=11.22.33.44_345&noask=111.222.333.444_223";
         Map<String, String> result = Util.getRequestFromStringQuery(request);
 
@@ -58,27 +58,27 @@ public class UtilTest {
     @Test
     public void testGetHostInUrl() throws Exception {
         String url = "http://www.facebook.com/lalallalal/lalal";
-        String result = Util.getHostInUrl(url);
+        String result = Util.getHostFromUrl(url);
         assertEquals("facebook.com", result);
 
 
         url = "www.facebook.com/aasdasd/asdasd";
-        result = Util.getHostInUrl(url);
+        result = Util.getHostFromUrl(url);
         assertEquals("facebook.com", result);
 
 
         url = "facebook.com/aasdasd/asdasd";
-        result = Util.getHostInUrl(url);
+        result = Util.getHostFromUrl(url);
         assertEquals("facebook.com", result);
 
 
         url = "www.facebook.com/";
-        result = Util.getHostInUrl(url);
+        result = Util.getHostFromUrl(url);
         assertEquals("facebook.com", result);
 
 
         url = "www.facebook.com";
-        result = Util.getHostInUrl(url);
+        result = Util.getHostFromUrl(url);
         assertEquals("facebook.com", result);
     }
 
@@ -89,7 +89,7 @@ public class UtilTest {
     @Test
     public void testGetParamsFromInput() throws Exception {
         String input = "send post 192.168.10.101:1111/checkmd5 sendip=192.168.10.101 port=1111 id=asdsad md5=md5 ranges=[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"] wildcard=? symbolrange=[[3,10], [100,150]]";
-        String[] result = Util.getParamsFromInput(input);
+        String[] result = Util.getCmdParams(input);
 
         assertEquals(9, result.length);
     }

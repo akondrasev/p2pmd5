@@ -13,7 +13,7 @@ public class Crack implements ServerCommand {
         String md5 = request.get("md5");
 
         Commands commander = new Commands();
-        String sendip = Util.getCurrentHostIp();
+        String sendip = Util.getCurrentIp();
         int sendport = new Commands().getServer().getPort();
         String requestId = "ffff";
         int ttlValue = 3;

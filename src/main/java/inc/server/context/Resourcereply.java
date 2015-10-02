@@ -14,7 +14,7 @@ public class Resourcereply implements ServerCommand {
         String toIp = request.get("ip");
         String requestId = request.get("id");
 
-        String sendip = Util.getCurrentHostIp();
+        String sendip = Util.getCurrentIp();
         int port = new Commands().getServer().getPort();
 
         commander.sendRequest("POST", String.format("%s:%s/checkmd5", toIp, toPort),
