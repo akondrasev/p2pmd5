@@ -19,17 +19,17 @@ public class Util {
         return inputWords[0].trim();
     }
 
-    public static synchronized String[] getKnownComputersFromJson(String json){
+    public static synchronized String[] getKnownComputersFromJson(String json) {
         json = json.replaceAll(" ", "");
         json = json.replaceAll("\"", "");
         json = json.substring(1, json.length() - 1);
 
         String[] tmp = json.split("\\],\\[");
-        tmp[0] = tmp[0].replace("[","");
-        tmp[tmp.length-1] = tmp[tmp.length-1].replace("]","");
+        tmp[0] = tmp[0].replace("[", "");
+        tmp[tmp.length - 1] = tmp[tmp.length - 1].replace("]", "");
 
 
-        for (int i = 0; i<tmp.length; i++){
+        for (int i = 0; i < tmp.length; i++) {
             String current = tmp[i];
             String[] ipPortPair = current.split(",");
             tmp[i] = ipPortPair[0] + ":" + ipPortPair[1];
@@ -70,7 +70,7 @@ public class Util {
         String tempJson = json.trim();
         tempJson = tempJson.replaceAll("\"", "");
         tempJson = tempJson.replaceAll(" ", "");
-        tempJson = tempJson.substring(1, tempJson.length()-1);
+        tempJson = tempJson.substring(1, tempJson.length() - 1);
 
 
         String[] tmp = tempJson.split(",");
@@ -86,7 +86,7 @@ public class Util {
             }
 
             String existingValue = result.get(key_valuePair[0]);
-            if(existingValue != null){
+            if (existingValue != null) {
                 existingValue += "," + key_valuePair[1];
                 result.put(key_valuePair[0], existingValue);
             } else {
@@ -180,7 +180,7 @@ public class Util {
 
         int index = requestParams[0].indexOf("?") + 1;
 
-        if(index == 0){
+        if (index == 0) {
             return null;
         }
 
@@ -192,7 +192,7 @@ public class Util {
             String key = keyValue_pair[0];
             String value = result.get(key);
 
-            if(value == null){
+            if (value == null) {
                 value = keyValue_pair[1];
             } else {
                 value = value + "," + keyValue_pair[1];

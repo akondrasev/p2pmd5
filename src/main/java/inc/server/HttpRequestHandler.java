@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 public class HttpRequestHandler implements Runnable {
 
-    private static final String ZERO = "0";
+    private static final String OK_CODE = "0";
     private Socket socket;
     private Map<String, String> request;
 
@@ -69,19 +69,19 @@ public class HttpRequestHandler implements Runnable {
                 request = Util.getRequestFromJson(postData);
             }
 
+            System.out.println(String.format("Processing request '%s': %s", context, request));
             if(context.equals("/crack")){
                 new Crack().executeCommand(request);
                 out.print(new Crack().executeCommand(request));
             } else {
                 processContext(context);
-                out.print(ZERO);
+                out.print(OK_CODE);
             }
             out.flush();
         } catch (IOException ignored) {}
     }
 
     private void processContext(String context) {
-        System.out.println(String.format("Processing request '%s': %s", context, request));
         if(context == null){
             return;
         }

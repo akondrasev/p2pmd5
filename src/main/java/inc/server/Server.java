@@ -32,7 +32,8 @@ public class Server implements Runnable {
         isRunning = false;
         try {
             serverSocket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     public void start(int port) {
@@ -43,7 +44,8 @@ public class Server implements Runnable {
         this.port = port;
         try {
             serverSocket = new ServerSocket(port);
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
 
         serverThread = new Thread(this);
         serverThread.start();

@@ -18,7 +18,8 @@ public class Checkmd5 implements ServerContext {
 
         try {
             Thread.sleep(7000L);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
 
         commander.setWorking(false);
         commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
@@ -28,7 +29,7 @@ public class Checkmd5 implements ServerContext {
                 String.format("md5=%s", request.get("md5")),
                 String.format("result=%s", 0),
                 String.format("resultstring=%s", "resultstring on selline")
-                );
+        );
         return "Start checking md5";
     }
 }

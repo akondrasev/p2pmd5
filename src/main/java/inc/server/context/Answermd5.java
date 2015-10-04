@@ -12,7 +12,7 @@ public class Answermd5 implements ServerContext {
         Commands commander = new Commands();
         Commands.setDone(true);
 
-        if(request.get("result").equals("0")){
+        if (request.get("result").equals("0")) {
             commander.setResult(request.get("resultstring"));
         }
 

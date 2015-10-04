@@ -21,9 +21,6 @@ public class UICmd implements Runnable {
     private Map<String, Command> installedCommands;
 
     private static boolean isTerminated;
-    public static final String[] knownUrls = new String[]{
-        "127.0.0.1:1111", "127.0.0.1:2222", "127.0.0.1:3333"
-    };
 
     public UICmd() {
         installedCommands = new HashMap<>();

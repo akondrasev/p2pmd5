@@ -22,7 +22,7 @@ public class Resource implements ServerContext {
         String[] noaskAddresses = getNoaskAddresses(noask);
 
         int ttlValue = 0;
-        if(!(ttl == null || ttl.equals(""))){
+        if (!(ttl == null || ttl.equals(""))) {
             ttlValue = Integer.parseInt(ttl);
             ttlValue--;
         }
@@ -30,7 +30,7 @@ public class Resource implements ServerContext {
 
         String sendip = Util.getCurrentIp();
         int port = commander.getServer().getPort();
-        if(!commander.isWorking() && !String.format("%s:%s", sendip, port).equals(String.format("%s:%s", toIp, toPort))){
+        if (!commander.isWorking()) {
             commander.sendRequest(
                     "POST", String.format("%s:%s/resourcereply", toIp, toPort),
                     String.format("ip=%s", sendip),
@@ -41,7 +41,7 @@ public class Resource implements ServerContext {
         }
 
         int bonusLength = 0;
-        if(noaskAddresses != null){
+        if (noaskAddresses != null) {
             bonusLength = noaskAddresses.length;
         }
 
@@ -56,7 +56,7 @@ public class Resource implements ServerContext {
         if (ttlValue > 1) {
             for (int i = 0; i < Commands.computers.length; i++) {
 
-                if(validateAddress(Commands.computers[i], noaskAddresses)){
+                if (validateAddress(Commands.computers[i], noaskAddresses)) {
                     commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
                             allParamsForResourceRequest);
                 } else {
@@ -70,25 +70,25 @@ public class Resource implements ServerContext {
 
     protected void populateNoaskParams(String noask, String[] allParamsForResourceRequest, int i) {
 
-        if(noask == null){
+        if (noask == null) {
             return;
         }
 
         String[] noaskParams = noask.split(",");
 
-        for(String noaskParam : noaskParams){
+        for (String noaskParam : noaskParams) {
             allParamsForResourceRequest[i++] = "noask=" + noaskParam;
         }
     }
 
-    protected boolean validateAddress(String address, String[] noAvailableAddresses){
+    protected boolean validateAddress(String address, String[] noAvailableAddresses) {
 
-        if(noAvailableAddresses == null){
+        if (noAvailableAddresses == null) {
             return true;
         }
 
-        for(String s : noAvailableAddresses){
-            if(s.equals(address)){
+        for (String s : noAvailableAddresses) {
+            if (s.equals(address)) {
                 return false;
             }
         }
@@ -96,17 +96,17 @@ public class Resource implements ServerContext {
         return true;
     }
 
-    private String[] getNoaskAddresses(String noaskListCommaSeparated){
-        if(noaskListCommaSeparated == null){
+    private String[] getNoaskAddresses(String noaskListCommaSeparated) {
+        if (noaskListCommaSeparated == null) {
             return null;
         }
 
         String[] list = noaskListCommaSeparated.split(",");
         String[] result = new String[list.length];
 
-        for (int i = 0; i < list.length; i++){
+        for (int i = 0; i < list.length; i++) {
             String[] ipPortPair = list[i].split("_");
-            result[i] = ipPortPair[0]+":"+ipPortPair[1];
+            result[i] = ipPortPair[0] + ":" + ipPortPair[1];
         }
 
         return result;

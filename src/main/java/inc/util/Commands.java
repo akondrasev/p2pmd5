@@ -1,6 +1,5 @@
 package inc.util;
 
-import inc.controller.Command;
 import inc.server.Server;
 
 import java.io.BufferedReader;
@@ -16,6 +15,7 @@ import java.util.Arrays;
 public class Commands {
 
     private static final Server server;
+
     static {
         server = new Server();
     }
@@ -24,55 +24,69 @@ public class Commands {
     private static boolean working = false;
     private static boolean done = false;
     private static String result = "";
+    private static int ttl = 3;
+
+    public int getTtl() {
+        synchronized (Commands.class) {
+            return ttl;
+        }
+    }
+
+    public void setTtl(int ttl) {
+        synchronized (Commands.class) {
+            Commands.ttl = ttl;
+        }
+    }
+
 
     public Commands() {
     }
 
     public String getResult() {
-        synchronized (Commands.class){
+        synchronized (Commands.class) {
             return result;
         }
     }
 
     public void setResult(String result) {
-        synchronized (Commands.class){
+        synchronized (Commands.class) {
             Commands.result = result;
         }
     }
 
     public static boolean isDone() {
-        synchronized (Commands.class){
+        synchronized (Commands.class) {
             return done;
         }
     }
 
     public static void setDone(boolean isdone) {
-        synchronized (Commands.class){
+        synchronized (Commands.class) {
             done = isdone;
         }
     }
 
-    public void setWorking(boolean isWorking){
-        synchronized (Commands.class){
+    public void setWorking(boolean isWorking) {
+        synchronized (Commands.class) {
             working = isWorking;
         }
     }
 
-    public boolean isWorking(){
-        synchronized (Commands.class){
+    public boolean isWorking() {
+        synchronized (Commands.class) {
             return working;
         }
     }
 
     public Server getServer() {
-        synchronized (server){
+        synchronized (server) {
             return server;
         }
     }
 
     public String stopServer() {
-        synchronized (server){
-            if(server.isRunning()){
+        synchronized (server) {
+            if (server.isRunning()) {
                 server.stop();
                 return "Server stopped successfully";
             }
@@ -81,15 +95,15 @@ public class Commands {
         }
     }
 
-    public String readConfigFromFile(String fileName){
+    public String readConfigFromFile(String fileName) {
         String machinesJson = Util.readJsonFromFile(fileName);
         computers = Util.getKnownComputersFromJson(machinesJson);
         return "Loaded IPs are: " + Arrays.toString(computers);
     }
 
     public String startServer(int port) {
-        synchronized (server){
-            if(server.isRunning()){
+        synchronized (server) {
+            if (server.isRunning()) {
                 return "Server is already started";
             }
             server.start(port);
@@ -199,7 +213,7 @@ public class Commands {
             String queryString = Util.parseArrayToGetParams(params);
             System.out.println(String.format("query string: %s", queryString));
 
-            if(queryString != null){
+            if (queryString != null) {
                 context = context + "?" + queryString;
             }
 
