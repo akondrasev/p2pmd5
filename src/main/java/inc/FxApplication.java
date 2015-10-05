@@ -48,6 +48,7 @@ public class FxApplication extends Application {
         Label ttlLabel = new Label("Ttl:");
         TextField textFieldPort = new TextField();
         TextField ttlTextField = new TextField();
+        ttlTextField.setText(String.valueOf(commander.getTtl()));
         textFieldPort.setMaxWidth(50);
         ttlTextField.setMaxWidth(50);
         Button startServerButton = new Button("Start Server");

@@ -31,38 +31,42 @@ public class Resource implements ServerContext {
         String sendip = Util.getCurrentIp();
         int port = commander.getServer().getPort();
         if (!commander.isWorking()) {
-            commander.sendRequest(
-                    "POST", String.format("%s:%s/resourcereply", toIp, toPort),
-                    String.format("ip=%s", sendip),
-                    String.format("port=%s", port),
-                    String.format("id=%s", requestId),
-                    String.format("resource=%s", 100)
-            );
+            new Thread(() -> {
+                commander.sendRequest(
+                        "POST", String.format("%s:%s/resourcereply", toIp, toPort),
+                        String.format("ip=%s", sendip),
+                        String.format("port=%s", port),
+                        String.format("id=%s", requestId),
+                        String.format("resource=%s", 100)
+                );
+            }).start();
         }
 
-        int bonusLength = 0;
-        if (noaskAddresses != null) {
-            bonusLength = noaskAddresses.length;
-        }
 
-        String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
-        allParamsForResourceRequest[0] = String.format("sendip=%s", sendip);
-        allParamsForResourceRequest[1] = String.format("sendport=%s", port);
-        allParamsForResourceRequest[2] = String.format("ttl=%s", ttlValue);
-        allParamsForResourceRequest[3] = String.format("id=%s", requestId);
-        populateNoaskParams(noask, allParamsForResourceRequest, 4);
-        allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
 
         if (ttlValue > 1) {
-            for (int i = 0; i < Commands.computers.length; i++) {
-
-                if (validateAddress(Commands.computers[i], noaskAddresses)) {
-                    commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
-                            allParamsForResourceRequest);
-                } else {
-                    System.out.println(String.format("noask %s -> do not send here", Commands.computers[i]));
-                }
+            int bonusLength = 0;
+            if (noaskAddresses != null) {
+                bonusLength = noaskAddresses.length;
             }
+            String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
+            allParamsForResourceRequest[0] = String.format("sendip=%s", sendip);
+            allParamsForResourceRequest[1] = String.format("sendport=%s", port);
+            allParamsForResourceRequest[2] = String.format("ttl=%s", ttlValue);
+            allParamsForResourceRequest[3] = String.format("id=%s", requestId);
+            populateNoaskParams(noask, allParamsForResourceRequest, 4);
+            allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
+            new Thread(() -> {
+                for (int i = 0; i < Commands.computers.length; i++) {
+
+                    if (validateAddress(Commands.computers[i], noaskAddresses)) {
+                        commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
+                                allParamsForResourceRequest);
+                    } else {
+                        System.out.println(String.format("noask %s -> do not send here", Commands.computers[i]));
+                    }
+                }
+            }).start();
         }
 
         return "all resources done";
