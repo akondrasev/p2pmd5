@@ -123,13 +123,14 @@ public class UtilTest {
     @Test
     public void testGetRequestFromJson() throws Exception {
         Map<String, String> result = Util.getRequestFromJson(
-                "{\"ip\":\"192.168.10.76\", \"port\":\"1111\", \"id\":\"123\", \"md5\":\"hash\", \"ranges\":[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"], \"wildcard\":\"?\", \"symbolrange\":[[3,10], [100,150]]}");
+                "{\"ip\":\"192.168.10.76\", \"port\":\"1111\", \"id\":\"123\", \"md5\":\"hash\", \"ranges\":[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"], \"wildcard\":\"?\", \"symbolrange\":[[3,10], [100,150]], \"resultstring\":\"result string on selline\"}");
 
         assertEquals("192.168.10.76", result.get("ip"));
         assertEquals("1111", result.get("port"));
         assertEquals("123", result.get("id"));
         assertEquals("[ax?o?ssss,aa,ab,ab]", result.get("ranges"));
         assertEquals("[[3,10],[100,150]]", result.get("symbolrange"));
+        assertEquals("result string on selline", result.get("resultstring"));
     }
 
     @Test

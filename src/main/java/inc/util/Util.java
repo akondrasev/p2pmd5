@@ -69,7 +69,7 @@ public class Util {
         Map<String, String> result = new TreeMap<>();
         String tempJson = json.trim();
         tempJson = tempJson.replaceAll("\"", "");
-        tempJson = tempJson.replaceAll(" ", "");
+//        tempJson = tempJson.replaceAll(" ", "");
         tempJson = tempJson.substring(1, tempJson.length() - 1);
 
 
@@ -80,19 +80,19 @@ public class Util {
 
             if (key_valuePair.length == 1) {
                 String value = result.get(lastKey);
-                value = value + "," + key_valuePair[0];
+                value = value + "," + key_valuePair[0].trim();
                 result.put(lastKey, value);
                 continue;
             }
 
             String existingValue = result.get(key_valuePair[0]);
             if (existingValue != null) {
-                existingValue += "," + key_valuePair[1];
-                result.put(key_valuePair[0], existingValue);
+                existingValue += "," + key_valuePair[1].trim();
+                result.put(key_valuePair[0].trim(), existingValue);
             } else {
-                result.put(key_valuePair[0], key_valuePair[1]);
+                result.put(key_valuePair[0].trim(), key_valuePair[1].trim());
             }
-            lastKey = key_valuePair[0];
+            lastKey = key_valuePair[0].trim();
         }
         return result;
     }
