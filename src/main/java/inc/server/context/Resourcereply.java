@@ -29,6 +29,6 @@ public class Resourcereply implements ServerContext {
             );
         }).start();
 
-        return "checkmd5 sent";
+        return String.valueOf(ServerContext.OK_CODE);
     }
 }

@@ -10,7 +10,6 @@ import java.util.TreeMap;
 
 public class HttpRequestHandler implements Runnable {
 
-    private static final String OK_CODE = "0";
     private Socket socket;
     private Map<String, String> request;
 
@@ -24,6 +23,7 @@ public class HttpRequestHandler implements Runnable {
         allowedContexts.put("/resourcereply", new Resourcereply());
         allowedContexts.put("/checkmd5", new Checkmd5());
         allowedContexts.put("/answermd5", new Answermd5());
+        allowedContexts.put("/crack", new Crack());
     }
 
     @Override
@@ -69,35 +69,29 @@ public class HttpRequestHandler implements Runnable {
                 request = Util.getRequestFromJson(postData);
             }
 
-            System.out.println(String.format("Processing request '%s': %s", context, request));
-            if (context.equals("/crack")) {
-                out.print(new Crack().executeCommand(request));
-            } else {
-                processContext(context);
-                out.print(OK_CODE);
-            }
+            out.print(processContext(context));
             out.flush();
         } catch (IOException ignored) {
         }
     }
 
-    private void processContext(String context) {
+    private String processContext(String context) {
+        System.out.println(String.format("Processing request '%s': %s", context, request));
         if (context == null) {
-            return;
+            return String.valueOf(ServerContext.UNKNOWN_CONTEXT_CODE);
         }
 
         if (request == null) {
-            return;
+            return String.valueOf(ServerContext.WRONG_REQUEST_PARAMS_CODE);
         }
 
         ServerContext serverContext = allowedContexts.get(context);
 
-
         if (serverContext == null) {
             System.out.println(String.format("\nUnknown request context '%s'\n", context));
-            return;
+            return String.valueOf(ServerContext.UNKNOWN_CONTEXT_CODE);
         }
 
-        serverContext.executeCommand(request);
+        return serverContext.executeCommand(request);
     }
 }

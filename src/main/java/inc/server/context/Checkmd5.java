@@ -18,7 +18,7 @@ public class Checkmd5 implements ServerContext {
 
         new Thread(() -> {
             try {
-                Thread.sleep(7000L);
+                Thread.sleep(7000L);//TODO working bruteforce here
             } catch (InterruptedException ignored) {
             }
             commander.setWorking(false);
@@ -32,6 +32,6 @@ public class Checkmd5 implements ServerContext {
             );
         }).start();
 
-        return "Start checking md5";
+        return String.valueOf(ServerContext.OK_CODE);
     }
 }

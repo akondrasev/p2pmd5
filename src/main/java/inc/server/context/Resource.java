@@ -69,7 +69,7 @@ public class Resource implements ServerContext {
             }).start();
         }
 
-        return "all resources done";
+        return String.valueOf(ServerContext.OK_CODE);
     }
 
     protected void populateNoaskParams(String noask, String[] allParamsForResourceRequest, int i) {
