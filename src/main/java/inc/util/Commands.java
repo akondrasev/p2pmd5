@@ -25,6 +25,19 @@ public class Commands {
     private static boolean done = false;
     private static String result = "";
     private static int ttl = 3;
+    private static int timeout = 20;
+
+    public int getTimeout() {
+        synchronized (Commands.class){
+            return timeout;
+        }
+    }
+
+    public void setTimeout(int timeout) {
+        synchronized (Commands.class){
+            Commands.timeout = timeout;
+        }
+    }
 
     public int getTtl() {
         synchronized (Commands.class) {

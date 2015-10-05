@@ -45,18 +45,21 @@ public class Resource implements ServerContext {
 
 
         if (ttlValue > 1) {
-            int bonusLength = 0;
-            if (noaskAddresses != null) {
-                bonusLength = noaskAddresses.length;
-            }
-            String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
-            allParamsForResourceRequest[0] = String.format("sendip=%s", sendip);
-            allParamsForResourceRequest[1] = String.format("sendport=%s", port);
-            allParamsForResourceRequest[2] = String.format("ttl=%s", ttlValue);
-            allParamsForResourceRequest[3] = String.format("id=%s", requestId);
-            populateNoaskParams(noask, allParamsForResourceRequest, 4);
-            allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
+            final int inThreadTtlValue = ttlValue;
             new Thread(() -> {
+
+                int bonusLength = 0;
+                if (noaskAddresses != null) {
+                    bonusLength = noaskAddresses.length;
+                }
+                String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
+                allParamsForResourceRequest[0] = String.format("sendip=%s", toIp);
+                allParamsForResourceRequest[1] = String.format("sendport=%s", toPort);
+                allParamsForResourceRequest[2] = String.format("ttl=%s", inThreadTtlValue);
+                allParamsForResourceRequest[3] = String.format("id=%s", requestId);
+                populateNoaskParams(noask, allParamsForResourceRequest, 4);
+                allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
+
                 for (int i = 0; i < Commands.computers.length; i++) {
 
                     if (validateAddress(Commands.computers[i], noaskAddresses)) {

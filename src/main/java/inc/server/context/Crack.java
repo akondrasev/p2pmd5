@@ -29,8 +29,8 @@ public class Crack implements ServerContext {
 
 
         for (int i = 0; !commander.isDone(); i++){
-            if (i > 20) {
-                return "timeout";
+            if (i > commander.getTimeout()) {
+                return String.format("Timeout %ss", commander.getTimeout());
             }
             try {
                 Thread.sleep(1000L);

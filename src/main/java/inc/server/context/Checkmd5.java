@@ -19,8 +19,8 @@ public class Checkmd5 implements ServerContext {
         new Thread(() -> {
             try {
                 Thread.sleep(7000L);//TODO working bruteforce here
-            } catch (InterruptedException ignored) {
-            }
+            } catch (InterruptedException ignored) {}
+
             commander.setWorking(false);
             commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
                     String.format("port=%s", commander.getServer().getPort()),
