@@ -83,7 +83,11 @@ public class FxApplication extends Application {
             System.exit(0);
         });
 
-        setTtlButton.setOnAction(event -> commander.setTtl(Integer.parseInt(ttlTextField.getText())));
+        setTtlButton.setOnAction(event -> {
+            int ttl = Integer.parseInt(ttlTextField.getText());
+            commander.setTtl(ttl);
+            System.out.println(String.format("TTL values is set to '%s'", ttl));
+        });
 
         System.setOut(new PrintStream(new OutputStream() {
             @Override

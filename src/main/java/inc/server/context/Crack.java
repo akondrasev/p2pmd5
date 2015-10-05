@@ -10,10 +10,10 @@ import java.util.Map;
 public class Crack implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
-        Commands.setDone(false);
         String md5 = request.get("md5");//todo make global to send for crack
 
         Commands commander = new Commands();
+        commander.setDone(false);
         String sendip = Util.getCurrentIp();
         int sendport = new Commands().getServer().getPort();
         String requestId = "ffff";
@@ -28,7 +28,7 @@ public class Crack implements ServerContext {
         );
 
         int seconds = 0;
-        while (!Commands.isDone()) {
+        while (!commander.isDone()) {
             if (seconds > 15) {
                 return "timeout";
             }

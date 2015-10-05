@@ -70,30 +70,30 @@ public class HttpRequestHandler implements Runnable {
             }
 
             System.out.println(String.format("Processing request '%s': %s", context, request));
-            if(context.equals("/crack")){
-                new Crack().executeCommand(request);
+            if (context.equals("/crack")) {
                 out.print(new Crack().executeCommand(request));
             } else {
                 processContext(context);
                 out.print(OK_CODE);
             }
             out.flush();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     private void processContext(String context) {
-        if(context == null){
+        if (context == null) {
             return;
         }
 
-        if(request == null){
+        if (request == null) {
             return;
         }
 
         ServerContext serverContext = allowedContexts.get(context);
 
 
-        if(serverContext == null){
+        if (serverContext == null) {
             System.out.println(String.format("\nUnknown request context '%s'\n", context));
             return;
         }

@@ -10,7 +10,7 @@ public class Answermd5 implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
         Commands commander = new Commands();
-        Commands.setDone(true);
+        commander.setDone(true);
 
         if (request.get("result").equals("0")) {
             commander.setResult(request.get("resultstring"));

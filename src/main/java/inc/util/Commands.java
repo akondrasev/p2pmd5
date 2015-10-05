@@ -54,13 +54,13 @@ public class Commands {
         }
     }
 
-    public static boolean isDone() {
+    public boolean isDone() {
         synchronized (Commands.class) {
             return done;
         }
     }
 
-    public static void setDone(boolean isdone) {
+    public void setDone(boolean isdone) {
         synchronized (Commands.class) {
             done = isdone;
         }
