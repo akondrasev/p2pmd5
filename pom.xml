@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>onton</groupId>
-    <artifactId>p2md5</artifactId>
+    <artifactId>p2pmd5</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>p2md5</name>
+    <name>p2pmd5</name>
     <url>http://maven.apache.org</url>
 
     <properties>

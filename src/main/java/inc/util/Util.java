@@ -215,30 +215,28 @@ public class Util {
     }
 
     public static synchronized String readJsonFromFile(String file) {
-        FileInputStream fileInputStream = null;
+        FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
         } catch (FileNotFoundException ignored) {
-            ignored.printStackTrace();
+            return null;
         }
         StringBuilder result = new StringBuilder();
 
-        if (fileInputStream != null) {
-            int available = -1;
-            try {
-                available = fileInputStream.available();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        int available = -1;
+        try {
+            available = fileInputStream.available();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            if (available > -1) {
-                for (int i = 0; i < available; i++) {
-                    try {
-                        char c = (char) fileInputStream.read();
-                        result.append(c);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        if (available > -1) {
+            for (int i = 0; i < available; i++) {
+                try {
+                    char c = (char) fileInputStream.read();
+                    result.append(c);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

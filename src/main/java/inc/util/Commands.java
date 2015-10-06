@@ -110,6 +110,9 @@ public class Commands {
 
     public String readConfigFromFile(String fileName) {
         String machinesJson = Util.readJsonFromFile(fileName);
+        if(machinesJson == null){
+            return "file not found";
+        }
         computers = Util.getKnownComputersFromJson(machinesJson);
         return "Loaded IPs are: " + Arrays.toString(computers);
     }

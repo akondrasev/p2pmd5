@@ -1,0 +1,1 @@
+java -jar target/p2pmd5-1.0-SNAPSHOT.jar

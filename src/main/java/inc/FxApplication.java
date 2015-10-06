@@ -77,7 +77,6 @@ public class FxApplication extends Application {
         });
         textArea.appendText(commander.readConfigFromFile("machines.txt") + Util.CRLF);
 
-        primaryStage.show();
         primaryStage.setOnCloseRequest(t -> {
             commander.stopServer();
             Platform.exit();
@@ -131,5 +130,7 @@ public class FxApplication extends Application {
         }
 
         pane.add(vBox, 1, 5, 3, 5);
+
+        Platform.runLater(primaryStage::show);
     }
 }
