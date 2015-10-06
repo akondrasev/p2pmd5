@@ -8,7 +8,7 @@ import java.util.Map;
 public class Crack implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
-        String md5 = request.get("md5");//todo make global to send for crack
+        String md5 = request.get("md5");
 
         Commands commander = new Commands();
 

@@ -5,7 +5,6 @@ import inc.util.Util;
 
 import java.util.Map;
 
-//TODO data here
 // {"ip": "55.66.77.88", "port": "6788", "id": "siinonid", "md5": "siinonmd5string", "ranges": ["ax?o?ssss","aa","ab","ac","ad"], "wildcard": "?", "symbolrange": [[3,10],[100,150]]}
 public class Checkmd5 implements ServerContext {
     @Override
@@ -18,14 +17,15 @@ public class Checkmd5 implements ServerContext {
         String toPort = request.get("port");
         String md5 = request.get("md5");
         String requestId = request.get("id");
-        if(requestId == null){
-            requestId = "NOT_SPECIFIED";
-        }
+        String ranges = request.get("ranges");// should be String[]
+        String wildcard = request.get("wildcard");//symbol
+        String symbolrange = request.get("symbolrange");//should be int[][]
 
         final String finalRequestId = requestId;
         new Thread(() -> {
             try {
-                Thread.sleep(7000L);//TODO working bruteforce here
+                Thread.sleep(7000L);//TODO working bruteforce here, parse params as needed for method below
+//                String result = Util.checkMd5();
             } catch (InterruptedException ignored) {}
 
             commander.setWorking(false);

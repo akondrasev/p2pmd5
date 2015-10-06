@@ -22,6 +22,20 @@ public class Util {
         return inputWords[0].trim();
     }
 
+    public static String checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange){
+        StringBuilder stringBuilder = new StringBuilder();
+        //TODO check md5
+        for (int i = 0; i < symbolrange.length; i++){
+            int minRange = symbolrange[i][0];
+            int maxRange = symbolrange[i][1];
+            System.out.println(String.format("%s-%s", minRange, maxRange));
+        }
+
+
+
+        return stringBuilder.toString();
+    }
+
     public static synchronized String[] getKnownComputersFromJson(String json) {
         json = json.replaceAll(" ", "");
         json = json.replaceAll("\"", "");
@@ -68,7 +82,7 @@ public class Util {
     }
 
 
-    public static synchronized Map<String, String> getRequestFromJson(String json) {//FIXME
+    public static synchronized Map<String, String> getRequestFromJson(String json) {
         Map<String, String> result = new TreeMap<>();
         String tempJson = json.trim();
         tempJson = tempJson.replaceAll("\"", "");

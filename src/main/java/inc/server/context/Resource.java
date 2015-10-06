@@ -44,7 +44,7 @@ public class Resource implements ServerContext {
 
 
 
-        if (ttlValue > 1) {
+        if (ttlValue > 1 && Commands.computers != null) {
             final int inThreadTtlValue = ttlValue;
             new Thread(() -> {
 

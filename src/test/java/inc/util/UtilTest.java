@@ -17,8 +17,16 @@ public class UtilTest {
     }
 
     @Test
+    public void testCheckMd5(){
+        int[] range1 = new int[]{1, 10};
+        int[] range2 = new int[]{50, 100};
+        int[][] symbolrange = new int[][]{range1, range2};
+        Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"koer"}, symbolrange);
+    }
+
+    @Test
     public void testMd5(){
-        String md5 = Util.md5("koer");
+        String md5 = Util.md5("koer");//68e1c85222192b83c04c0bae564b493d
         System.out.println(md5);
     }
 
