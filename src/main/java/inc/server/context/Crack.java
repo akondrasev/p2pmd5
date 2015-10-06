@@ -11,11 +11,15 @@ public class Crack implements ServerContext {
         String md5 = request.get("md5");//todo make global to send for crack
 
         Commands commander = new Commands();
-        commander.setDone(false);
+
         String sendip = Util.getCurrentIp();
         int sendport = new Commands().getServer().getPort();
-        String requestId = "ffff";
+        String requestId = String.valueOf(commander.incrementReqCount()+"ID");
+        commander.getResultsDoneFlags().put(requestId, false);
         int ttlValue = commander.getTtl();
+
+        commander.getResultsMap().put(requestId, null);
+        commander.getMd5Tasks().put(requestId, md5);
 
         new Thread(() -> {
             commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
@@ -28,7 +32,7 @@ public class Crack implements ServerContext {
         }).start();
 
 
-        for (int i = 0; !commander.isDone(); i++){
+        for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++){
             if (i > commander.getTimeout()) {
                 return String.format("Timeout %ss", commander.getTimeout());
             }
@@ -36,6 +40,6 @@ public class Crack implements ServerContext {
                 Thread.sleep(1000L);
             } catch (InterruptedException ignored) {}
         }
-        return "cracked! " + commander.getResult();
+        return String.format("Result for request id '%s': %s = %s", requestId, commander.getResultsMap().get(requestId), md5);
     }
 }

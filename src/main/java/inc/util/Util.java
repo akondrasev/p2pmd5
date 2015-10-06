@@ -3,8 +3,11 @@ package inc.util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -248,5 +251,17 @@ public class Util {
         }
 
         return result.toString();
+    }
+
+    public static synchronized String md5(String value){
+        MessageDigest mdEnc;
+        try {
+            mdEnc = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
+
+        mdEnc.update(value.getBytes(), 0, value.length());
+        return new BigInteger(1, mdEnc.digest()).toString(16);
     }
 }

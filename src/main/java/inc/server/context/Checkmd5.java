@@ -13,9 +13,16 @@ public class Checkmd5 implements ServerContext {
         Commands commander = new Commands();
         commander.setWorking(true);
 
+
         String toIp = request.get("ip");
         String toPort = request.get("port");
+        String md5 = request.get("md5");
+        String requestId = request.get("id");
+        if(requestId == null){
+            requestId = "NOT_SPECIFIED";
+        }
 
+        final String finalRequestId = requestId;
         new Thread(() -> {
             try {
                 Thread.sleep(7000L);//TODO working bruteforce here
@@ -25,10 +32,10 @@ public class Checkmd5 implements ServerContext {
             commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
                     String.format("port=%s", commander.getServer().getPort()),
                     String.format("ip=%s", Util.getCurrentIp()),
-                    String.format("id=%s", request.get("id")),
-                    String.format("md5=%s", request.get("md5")),
+                    String.format("id=%s", finalRequestId),
+                    String.format("md5=%s", md5),
                     String.format("result=%s", 0),
-                    String.format("resultstring=%s", "resultstring on selline")
+                    String.format("resultstring=%s", "koer")
             );
         }).start();
 

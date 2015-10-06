@@ -16,6 +16,12 @@ public class UtilTest {
 
     }
 
+    @Test
+    public void testMd5(){
+        String md5 = Util.md5("koer");
+        System.out.println(md5);
+    }
+
 
     @Test
     public void testGetKnownComputersFromJson(){

@@ -1,5 +1,6 @@
 package inc.util;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import inc.server.Server;
 
 import java.io.BufferedReader;
@@ -11,10 +12,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Commands {
 
     private static final Server server;
+    private static int reqCounter = 0;
 
     static {
         server = new Server();
@@ -22,10 +25,36 @@ public class Commands {
 
     public static String[] computers;
     private static boolean working = false;
-    private static boolean done = false;
-    private static String result = "";
     private static int ttl = 3;
     private static int timeout = 20;
+    private static HashMap<String, String> results = new HashMap<>();
+    private static HashMap<String, Boolean> resultsDoneFlags = new HashMap<>();
+    private static HashMap<String, String> md5Tasks = new HashMap<>();
+
+    /*
+    synced methods
+     */
+    public HashMap<String, String> getMd5Tasks(){
+        synchronized (Commands.class){
+            return md5Tasks;
+        }
+    }
+    public HashMap<String, Boolean> getResultsDoneFlags(){
+        synchronized (Commands.class){
+            return resultsDoneFlags;
+        }
+    }
+    public HashMap<String, String> getResultsMap(){
+        synchronized (Commands.class){
+            return results;
+        }
+    }
+
+    public int incrementReqCount(){
+        synchronized (Commands.class){
+            return reqCounter++;
+        }
+    }
 
     public int getTimeout() {
         synchronized (Commands.class){
@@ -48,34 +77,6 @@ public class Commands {
     public void setTtl(int ttl) {
         synchronized (Commands.class) {
             Commands.ttl = ttl;
-        }
-    }
-
-
-    public Commands() {
-    }
-
-    public String getResult() {
-        synchronized (Commands.class) {
-            return result;
-        }
-    }
-
-    public void setResult(String result) {
-        synchronized (Commands.class) {
-            Commands.result = result;
-        }
-    }
-
-    public boolean isDone() {
-        synchronized (Commands.class) {
-            return done;
-        }
-    }
-
-    public void setDone(boolean isdone) {
-        synchronized (Commands.class) {
-            done = isdone;
         }
     }
 
@@ -108,15 +109,6 @@ public class Commands {
         }
     }
 
-    public String readConfigFromFile(String fileName) {
-        String machinesJson = Util.readJsonFromFile(fileName);
-        if(machinesJson == null){
-            return "file not found";
-        }
-        computers = Util.getKnownComputersFromJson(machinesJson);
-        return "Loaded IPs are: " + Arrays.toString(computers);
-    }
-
     public String startServer(int port) {
         synchronized (server) {
             if (server.isRunning()) {
@@ -126,7 +118,19 @@ public class Commands {
             return "Server started listening port " + port;
         }
     }
+    //end of synced methods
 
+    public Commands() {
+    }
+
+    public String readConfigFromFile(String fileName) {
+        String machinesJson = Util.readJsonFromFile(fileName);
+        if(machinesJson == null){
+            return "file not found";
+        }
+        computers = Util.getKnownComputersFromJson(machinesJson);
+        return "Loaded IPs are: " + Arrays.toString(computers);
+    }
 
     public String sendRequest(String requestMethod, String url, String... params) {
         System.out.println(String.format("Sending request to %s", url));
