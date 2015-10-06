@@ -123,13 +123,15 @@ public class FxApplication extends Application {
 
 
         VBox vBox = new VBox();
-        for (String ip : Commands.computers) {
-            Text comp = new Text(ip);
-            comp.setFill(Color.VIOLET);
-            vBox.getChildren().add(comp);
+        if(Commands.computers != null && Commands.computers.length > 0){
+            for (String ip : Commands.computers) {
+                Text comp = new Text(ip);
+                comp.setFill(Color.VIOLET);
+                vBox.getChildren().add(comp);
+            }
         }
-
         pane.add(vBox, 1, 5, 3, 5);
+
 
         Platform.runLater(primaryStage::show);
     }
