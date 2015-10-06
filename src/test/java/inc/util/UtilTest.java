@@ -3,9 +3,11 @@ package inc.util;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class UtilTest {
 
@@ -135,7 +137,27 @@ public class UtilTest {
 
     @Test
     public void testReadJsonFromFile() {
-        String result = Util.readJsonFromFile("machines.txt");
-        assertEquals("[[\"127.0.0.1\",\"1111\"],[\"127.0.0.1\",\"2222\"],[\"127.0.0.1\",\"3333\"]]", result);
+        File newFile = new File("test.txt");
+        String containment = "[[\"127.0.0.1\",\"1111\" ],[ \"127.0.0.1\", \"2222\"],[\"127.0.0.1\", \"3333\" ] ]";
+        try {
+            boolean isFileCreated = newFile.createNewFile();
+            if(isFileCreated){
+                boolean exists = newFile.exists();
+                assertTrue(exists);
+
+                BufferedWriter toFile = new BufferedWriter(new FileWriter(newFile));
+                toFile.write(containment);
+                toFile.flush();
+                toFile.close();
+
+                String result = Util.readJsonFromFile("test.txt");
+                assertEquals(containment, result);
+
+                boolean deleted = newFile.delete();
+                assertTrue(deleted);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

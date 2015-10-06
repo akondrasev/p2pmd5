@@ -241,6 +241,12 @@ public class Util {
             }
         }
 
+        try {
+            fileInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return result.toString();
     }
 }
