@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -18,10 +19,18 @@ public class UtilTest {
 
     @Test
     public void testCheckMd5(){
-        int[] range1 = new int[]{1, 10};
-        int[] range2 = new int[]{50, 100};
-        int[][] symbolrange = new int[][]{range1, range2};
-        Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"koer"}, symbolrange);
+//        32 - 127 ASCII chars
+//        int[] range1 = new int[]{32, 64};
+//        int[] range2 = new int[]{65, 127};
+//        int[][] symbolrange = new int[][]{range1, range2};
+//        String result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"k??r", "?oala"}, symbolrange);
+//        assertEquals("koer", result);
+    }
+
+    @Test
+    public void testCheckWildcards(){
+        int[] result = Util.checkWildcards("k??r", '?');
+        assertEquals(result.length, 2);
     }
 
     @Test

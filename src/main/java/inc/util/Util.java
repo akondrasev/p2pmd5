@@ -1,13 +1,12 @@
 package inc.util;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,6 +15,7 @@ public class Util {
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
+    private static final PrintStream out = System.out;
 
     public static synchronized String getCmd(String input) {
         String[] inputWords = input.trim().split(" ");
@@ -23,17 +23,99 @@ public class Util {
     }
 
     public static String checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange){
-        StringBuilder stringBuilder = new StringBuilder();
+        String reslut = null;
         //TODO check md5
         for (int i = 0; i < symbolrange.length; i++){
-            int minRange = symbolrange[i][0];
-            int maxRange = symbolrange[i][1];
-            System.out.println(String.format("%s-%s", minRange, maxRange));
+            char[] word = ranges[i].toCharArray();
+            println("Parsing word: %s", String.valueOf(word));
+            for(int j = 0; j < ranges.length; j++){
+                int[] symbolRange = symbolrange[j];
+                println("SymbolRange: %s", Arrays.toString(symbolRange));
+                reslut = checkMd5(md5, wildcard.charAt(0), word, symbolRange);
+            }
+        }
+
+        return reslut;
+    }
+
+    public static String checkMD5(String md5, char wildcard, String word, int[] symbolrange){
+        int[] wildcardPlaces = checkWildcards(word, wildcard);
+        char[] chars = word.toCharArray();
+
+        for(int i = 0; i < wildcardPlaces.length; i++){
+            int index = wildcardPlaces[i];
+//            chars[index] =
         }
 
 
+        return null;
+    }
 
-        return stringBuilder.toString();
+    public static int[] checkWildcards(String word, char wildcard) {
+        int count = 0;
+        int lastIndex = -1;
+        String indexes = "";
+
+        do {
+            lastIndex = word.indexOf(wildcard, lastIndex+1);
+            if (lastIndex != -1){
+                count++;
+                indexes+=String.valueOf(lastIndex);
+            }
+        } while (lastIndex != -1);
+
+        int[] result = new int[count];
+        for(int i = 0; i < count; i++){
+            result[i] = Integer.parseInt(indexes.substring(i, i+1));
+        }
+
+        return result;
+    }
+
+
+    private static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange){
+        int maxRange = symbolrange[1];
+        int minRange = symbolrange[0];
+
+        if(md5.equals(md5(String.valueOf(word)))){
+            return String.valueOf(word);
+        }
+
+        for(int i = 0; i < word.length; i++){
+            if(word[i] == wildcard){
+                while(minRange <= maxRange){
+                    char[] tempWord = word.clone();
+                    char tempChar = (char) minRange;
+
+                    if(tempChar == wildcard){
+                        minRange++;
+                        continue;
+                    }
+
+                    tempWord[i] = tempChar;
+
+                    println(String.valueOf(tempWord));
+
+                    String currentMd5 = md5(String.valueOf(tempWord));
+
+                    if (currentMd5.equals(md5)){
+                        return String.valueOf(tempWord);
+                    }
+                    minRange++;
+                    return checkMd5(md5, wildcard, tempWord, symbolrange);
+                }
+            }
+        }
+
+        if(md5(String.valueOf(word)).equals(md5)){
+            return String.valueOf(word);
+        }
+
+        return null;
+
+    }
+    public static void println(String msg, Object... params){
+        out.println(String.format(msg, params));
     }
 
     public static synchronized String[] getKnownComputersFromJson(String json) {
@@ -155,7 +237,7 @@ public class Util {
             stringBuilder.append("\"");
             stringBuilder.append(key);
             stringBuilder.append("\":");
-            if (!value.startsWith("[")) {
+            if (!value.startsWith("[")) {//TODO numbers not in "number"
                 stringBuilder.append("\"");
             }
             stringBuilder.append(value);
@@ -268,13 +350,12 @@ public class Util {
     }
 
     public static synchronized String md5(String value){
-        MessageDigest mdEnc;
+        MessageDigest mdEnc = null;
         try {
             mdEnc = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
+        } catch (NoSuchAlgorithmException ignored) {}
 
+        assert mdEnc != null;
         mdEnc.update(value.getBytes(), 0, value.length());
         return new BigInteger(1, mdEnc.digest()).toString(16);
     }
