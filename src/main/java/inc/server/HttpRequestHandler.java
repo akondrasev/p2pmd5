@@ -5,6 +5,8 @@ import inc.util.Util;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -14,10 +16,13 @@ public class HttpRequestHandler implements Runnable {
     private Map<String, String> request;
 
     private Map<String, ServerContext> allowedContexts;
+    private Map<String, String> headers;
+    private String context = "/";
 
     public HttpRequestHandler(Socket socket) {
         this.socket = socket;
 
+        headers = new TreeMap<>();
         allowedContexts = new TreeMap<>();
         allowedContexts.put("/resource", new Resource());
         allowedContexts.put("/resourcereply", new Resourcereply());
@@ -29,49 +34,53 @@ public class HttpRequestHandler implements Runnable {
     @Override
     public void run() {
         try (
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                InputStreamReader in = new InputStreamReader(socket.getInputStream());
                 PrintWriter out = new PrintWriter(socket.getOutputStream())
         ) {
-            String line;
-            String postData = null;
-            int contentLength = -1;
-            String context = "/";
+            StringBuilder stringBuilder = new StringBuilder();
 
-            while (true) {//GET, content-length check and break
-                line = in.readLine();
-
-                if (line.contains("POST ") || line.contains("GET ")) {
-                    context = Util.getRequestContext(line);
-                }
-
-                if (line.contains("GET ")) {
-                    request = Util.getRequestFromStringQuery(line);
-                    break;
-                } else if (line.contains("Content-Length: ")) {
-                    contentLength = Integer.parseInt(line.split("Content-Length: ")[1]);
-                    break;
-                }
+            char temp;
+            while (in.ready()) {//GET, content-length check and break
+                temp = (char) in.read();
+                stringBuilder.append(temp);
             }
 
-            if (contentLength != -1) {
-
-                StringBuilder stringBuilder = new StringBuilder();
-                int c;
-                for (int i = 0; i < contentLength + 2; i++) {
-                    c = in.read();
-                    stringBuilder.append((char) c);
-                }
-
-                postData = stringBuilder.toString();
-            }
-
-            if (postData != null) {
-                request = Util.getRequestFromJson(postData);
-            }
+            parseRequestStream(stringBuilder.toString());
 
             out.print(processContext(context));
             out.flush();
         } catch (IOException ignored) {
+        }
+    }
+
+    private void parseRequestStream(String socketInputText){
+        String[] lines = socketInputText.split(Util.CRLF);
+        boolean isJson = false;
+
+        for(int i = 0; i < lines.length; i++){
+            String current = lines[i];
+
+            if(current.contains("GET ")){
+                request = Util.getRequestFromStringQuery(current);
+            }
+
+            if(current.contains("POST ") || current.contains("GET ")){
+                context = Util.getRequestContext(current);
+                continue;
+            }
+
+            if (current.equals("")){
+                isJson = true;
+                continue;
+            }
+            if(!isJson){
+                String[] keyValue_pair = current.split(": ");
+                String key = keyValue_pair[0];
+                String value = keyValue_pair[1];
+                headers.put(key, value);
+            } else {
+                request = Util.getRequestFromJson(current);
+            }
         }
     }
 

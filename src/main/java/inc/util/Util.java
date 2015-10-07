@@ -15,7 +15,6 @@ public class Util {
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
-    private static final PrintStream out = System.out;
 
     public static synchronized String getCmd(String input) {
         String[] inputWords = input.trim().split(" ");
@@ -115,7 +114,7 @@ public class Util {
 
     }
     public static void println(String msg, Object... params){
-        out.println(String.format(msg, params));
+        System.out.println(String.format(msg, params));
     }
 
     public static synchronized String[] getKnownComputersFromJson(String json) {
