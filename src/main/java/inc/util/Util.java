@@ -234,14 +234,22 @@ public class Util {
             String[] keyValue_pair = params[i].split("=");
             String key = keyValue_pair[0];
             String value = keyValue_pair[1];
+            boolean isNumeric = true;
+
+            try {
+                int tmp = Integer.parseInt(value);
+            } catch (NumberFormatException e){
+                isNumeric = false;
+            }
+
             stringBuilder.append("\"");
             stringBuilder.append(key);
             stringBuilder.append("\":");
-            if (!value.startsWith("[")) {//TODO numbers not in "number"
+            if (!value.startsWith("[") && !isNumeric) {
                 stringBuilder.append("\"");
             }
             stringBuilder.append(value);
-            if (!value.endsWith("]")) {
+            if (!value.endsWith("]") && !isNumeric) {
                 stringBuilder.append("\"");
             }
 

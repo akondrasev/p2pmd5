@@ -20,11 +20,11 @@ public class UtilTest {
     @Test
     public void testCheckMd5(){
 //        32 - 127 ASCII chars
-//        int[] range1 = new int[]{32, 64};
-//        int[] range2 = new int[]{65, 127};
-//        int[][] symbolrange = new int[][]{range1, range2};
-//        String result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"k??r", "?oala"}, symbolrange);
-//        assertEquals("koer", result);
+        int[] range1 = new int[]{32, 64};
+        int[] range2 = new int[]{65, 127};
+        int[][] symbolrange = new int[][]{range1, range2};
+        String result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"k??r", "?oala"}, symbolrange);
+        assertEquals("koer", result);
     }
 
     @Test
@@ -59,12 +59,13 @@ public class UtilTest {
 
     @Test
     public void testParseArrayToPostJson() {
-        String[] params = new String[3];
+        String[] params = new String[4];
         params[0] = "param1=val1";
         params[1] = "param2=val2";
         params[2] = "param3=[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]";
+        params[3] = "param4=100";
         String result = Util.parseStringArrayToJson(params);
-        assertEquals("correct URL params", "{\"param1\":\"val1\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]}", result);
+        assertEquals("correct URL params", "{\"param1\":\"val1\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}", result);
     }
 
     @Test
