@@ -179,7 +179,7 @@ public class Commands {
 
             out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
             out.write("Host: www." + url + Util.CRLF);
-            out.write("Content-length: " + postData.getBytes().length + Util.CRLF);
+            out.write("Content-Length: " + postData.getBytes().length + Util.CRLF);
             out.write(Util.CRLF);
             out.write(postData);
             out.write(Util.CRLF);

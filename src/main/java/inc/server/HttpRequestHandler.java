@@ -47,8 +47,8 @@ public class HttpRequestHandler implements Runnable {
                 if (line.contains("GET ")) {
                     request = Util.getRequestFromStringQuery(line);
                     break;
-                } else if (line.contains("Content-length: ")) {
-                    contentLength = Integer.parseInt(line.split("Content-length: ")[1]);
+                } else if (line.contains("Content-Length: ")) {
+                    contentLength = Integer.parseInt(line.split("Content-Length: ")[1]);
                     break;
                 }
             }
