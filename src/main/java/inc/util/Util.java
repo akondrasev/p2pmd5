@@ -1,6 +1,10 @@
 package inc.util;
 
-import java.io.*;
+import inc.dto.CrackResult;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,41 +20,78 @@ public class Util {
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
 
-    public static String getCmd(String input) {
+    public synchronized static String getCmd(String input) {
         String[] inputWords = input.trim().split(" ");
         return inputWords[0].trim();
     }
 
-    public static String checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
-        String reslut = null;
+    public synchronized static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
+        CrackResult reslut = null;
         //TODO check md5
-        for (int i = 0; i < symbolrange.length; i++) {
-            char[] word = ranges[i].toCharArray();
-            println("Parsing word: %s", String.valueOf(word));
-            for (int j = 0; j < ranges.length; j++) {
-                int[] symbolRange = symbolrange[j];
-                println("SymbolRange: %s", Arrays.toString(symbolRange));
-                reslut = checkMd5(md5, wildcard.charAt(0), word, symbolRange);
-            }
+        for (int i = 0; i < ranges.length; i++) {
+            String template = ranges[i];
+//            new Thread(new Md5Worker(md5, template, symbolrange, wildcard)).start();
+            new Md5Worker(md5, template, symbolrange, wildcard).run();
         }
-
         return reslut;
     }
 
-    public static String checkMD5(String md5, char wildcard, String word, int[] symbolrange) {
-        int[] wildcardPlaces = checkWildcards(word, wildcard);
-        char[] chars = word.toCharArray();
+    private static class Md5Worker implements Runnable {
+        private String md5;
+        private String template;
+        private int[][] symbolranges;
+        private String wildcard;
 
-        for (int i = 0; i < wildcardPlaces.length; i++) {
-            int index = wildcardPlaces[i];
-//            chars[index] =
+        private Md5Worker(String md5, String template, int[][] symbolranges, String wildcard) {
+            this.md5 = md5;
+            this.template = template;
+            this.symbolranges = symbolranges;
+            this.wildcard = wildcard;
+        }
+        private void checkMd5(String md5, String template, int[][] symbolranges, String wildcard){
+            for(int[] range : symbolranges){
+                Util.println("Working with range: %s", Arrays.toString(range));
+                checkRange(md5, template, range, wildcard);
+            }
+        }
+        private void checkRange(String md5, String template, int[] symbolranges, String wildcard){
+            int minRange = symbolranges[0];
+            int maxRange = symbolranges[1];
+            char[] word = template.toCharArray();
+            char wildcardChar = wildcard.charAt(0);
+            Util.println(template);
+
+            if(md5(template).equals(md5)){
+                Util.println("Done: %s",template);
+                return;
+            }
+
+            while(minRange <= maxRange){
+                char tmp = (char) minRange++;
+                for(int i = 0; i < word.length; i++){
+                    char currentWordChar = word[i];
+
+                    if(currentWordChar == wildcardChar){
+                        word[i] = tmp;
+                        checkRange(md5, String.valueOf(word), symbolranges, wildcard);
+                    }
+                }
+
+                if(md5(template).equals(md5)){
+                    Util.println("Done: %s",template);
+                    return;
+                }
+            }
         }
 
-
-        return null;
+        @Override
+        public void run() {
+            Util.println("Start working on word: %s", template);
+            checkMd5(md5, template, symbolranges, wildcard);
+        }
     }
 
-    public static int[] checkWildcards(String word, char wildcard) {
+    public synchronized static int[] checkWildcards(String word, char wildcard) {
         int count = 0;
         int lastIndex = -1;
         String indexes = "";
@@ -72,7 +113,7 @@ public class Util {
     }
 
 
-    private static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange) {
+    private synchronized static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange) {
         int maxRange = symbolrange[1];
         int minRange = symbolrange[0];
 
@@ -114,11 +155,11 @@ public class Util {
 
     }
 
-    public static void println(String msg, Object... params) {
+    public synchronized static void println(String msg, Object... params) {
         System.out.println(String.format(msg, params));
     }
 
-    public static String[] getKnownComputersFromJson(String json) {
+    public synchronized static String[] getKnownComputersFromJson(String json) {
         String tempjson = json.replaceAll(" ", "");
         tempjson = tempjson.replaceAll("\"", "");
         tempjson = tempjson.substring(1, tempjson.length() - 1);
@@ -137,7 +178,7 @@ public class Util {
         return tmp;
     }
 
-    public static String getHostFromUrl(String url) {
+    public synchronized static String getHostFromUrl(String url) {
         String result;
 
         String[] tmp = url.split("http://");
@@ -164,7 +205,7 @@ public class Util {
     }
 
 
-    public static Map<String, String> getRequestFromJson(String json) {
+    public synchronized static Map<String, String> getRequestFromJson(String json) {
         Map<String, String> result = new TreeMap<>();
         String tempJson = json.trim();
         tempJson = tempJson.replaceAll("\"", "");
@@ -196,7 +237,7 @@ public class Util {
         return result;
     }
 
-    private static String clearListsFromSpaces(String input, int startIndex) {
+    private synchronized static String clearListsFromSpaces(String input, int startIndex) {
         int openList = input.indexOf('[', startIndex);
         if (openList > -1) {
             int closeList = input.indexOf(']', startIndex);
@@ -209,7 +250,7 @@ public class Util {
         }
     }
 
-    public static String[] getCmdParams(String input) {
+    public synchronized static String[] getCmdParams(String input) {
         input = clearListsFromSpaces(input, 0);
 
         String[] inputWords = input.trim().split(" ");
@@ -226,7 +267,7 @@ public class Util {
     }
 
 
-    public static String parseStringArrayToJson(String... params) {
+    public synchronized static String parseStringArrayToJson(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("{");
@@ -263,7 +304,7 @@ public class Util {
         return stringBuilder.toString();
     }
 
-    public static String parseArrayToGetParams(String... params) {
+    public synchronized static String parseArrayToGetParams(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < params.length; i++) {
             stringBuilder.append(String.valueOf(params[i]));
@@ -276,7 +317,7 @@ public class Util {
         return stringBuilder.toString().length() > 0 ? stringBuilder.toString() : null;
     }
 
-    public static Map<String, String> getRequestFromStringQuery(String request) {
+    public synchronized static Map<String, String> getRequestFromStringQuery(String request) {
         String tmp = request.split("GET ")[1].split(" HTTP")[0].trim();
 
         if (tmp.equals("/") || tmp.equals("")) {
@@ -311,7 +352,7 @@ public class Util {
         return result;
     }
 
-    public static String getRequestContext(String host) {
+    public synchronized static String getRequestContext(String host) {
         String[] arr = host.split("/");
 
         if (arr.length <= 1) {
@@ -321,7 +362,7 @@ public class Util {
         return "/" + arr[1].split("\\?")[0].split("HTTP")[0].trim();
     }
 
-    public static String readJsonFromFile(String file) {
+    public synchronized static String readJsonFromFile(String file) {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
@@ -357,7 +398,7 @@ public class Util {
         return result.toString();
     }
 
-    public static String[] getStringTemplatesFromRanges(String ranges) {
+    public synchronized static String[] getStringTemplatesFromRanges(String ranges) {
         String tmp = ranges.replaceAll("\"", "");
         tmp = tmp.substring(1, tmp.length() - 1);
         String[] templates = tmp.split(",");
@@ -368,7 +409,7 @@ public class Util {
         return templates;
     }
 
-    public static String md5(String value) {
+    public synchronized static String md5(String value) {
         MessageDigest mdEnc = null;
         try {
             mdEnc = MessageDigest.getInstance("MD5");
@@ -380,7 +421,7 @@ public class Util {
         return new BigInteger(1, mdEnc.digest()).toString(16);
     }
 
-    public static int[][] getSymbolrange(String symbolrange) {
+    public synchronized static int[][] getSymbolrange(String symbolrange) {
         String tempjson = symbolrange.replaceAll(" ", "");
         tempjson = tempjson.substring(1, tempjson.length() - 1);// now: [10,10],[10,10],[10,10]
         tempjson = tempjson.replaceAll("\\[", "");
