@@ -4,6 +4,8 @@ import inc.util.Commands;
 import inc.util.Util;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,7 +37,7 @@ public class FxApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Text serverIndicator = new Text("Stopped");
+        final Text serverIndicator = new Text("Stopped");
         serverIndicator.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
         serverIndicator.setFill(Color.RED);
         Text sceneTitle = new Text("Peer to Peer MD5");
@@ -46,8 +49,8 @@ public class FxApplication extends Application {
 
         Label portLabel = new Label("Port:");
         Label ttlLabel = new Label("Ttl:");
-        TextField textFieldPort = new TextField();
-        TextField ttlTextField = new TextField();
+        final TextField textFieldPort = new TextField();
+        final TextField ttlTextField = new TextField();
         ttlTextField.setText(String.valueOf(commander.getTtl()));
         textFieldPort.setMaxWidth(50);
         ttlTextField.setMaxWidth(50);
@@ -55,44 +58,61 @@ public class FxApplication extends Application {
         Button setTtlButton = new Button("Set TTL");
         startServerButton.setDefaultButton(true);
         Button stopServerButton = new Button("Stop Server");
-        TextArea textArea = new TextArea();
+        final TextArea textArea = new TextArea();
         textArea.setEditable(false);
 
-        startServerButton.setOnAction(event -> {
-            int port;
-            try {
-                port = Integer.parseInt(textFieldPort.getText());
-            } catch (NumberFormatException e) {
-                port = 1215;
+        startServerButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int port;
+                try {
+                    port = Integer.parseInt(textFieldPort.getText());
+                } catch (NumberFormatException e) {
+                    port = 1215;
+                }
+                textArea.appendText(commander.startServer(port) + Util.CRLF);
+                serverIndicator.setText("Started: " + port);
+                serverIndicator.setFill(Color.GREEN);
             }
-            textArea.appendText(commander.startServer(port) + Util.CRLF);
-            serverIndicator.setText("Started: " + port);
-            serverIndicator.setFill(Color.GREEN);
-        });
+        } );
 
-        stopServerButton.setOnAction(event -> {
-            textArea.appendText(commander.stopServer() + Util.CRLF);
-            serverIndicator.setText("Stopped");
-            serverIndicator.setFill(Color.RED);
-        });
+        stopServerButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                textArea.appendText(commander.stopServer() + Util.CRLF);
+                serverIndicator.setText("Stopped");
+                serverIndicator.setFill(Color.RED);
+            }
+        } );
         textArea.appendText(commander.readConfigFromFile("machines.txt") + Util.CRLF);
 
-        primaryStage.setOnCloseRequest(t -> {
-            commander.stopServer();
-            Platform.exit();
-            System.exit(0);
-        });
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                commander.stopServer();
+                Platform.exit();
+                System.exit(0);
+            }
+        } );
 
-        setTtlButton.setOnAction(event -> {
-            int ttl = Integer.parseInt(ttlTextField.getText());
-            commander.setTtl(ttl);
-            System.out.println(String.format("TTL values is set to '%s'", ttl));
+        setTtlButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int ttl = Integer.parseInt(ttlTextField.getText());
+                commander.setTtl(ttl);
+                System.out.println(String.format("TTL values is set to '%s'", ttl));
+            }
         });
 
         System.setOut(new PrintStream(new OutputStream() {
             @Override
-            public void write(int b) throws IOException {
-                Platform.runLater(() -> textArea.appendText(String.valueOf((char) b)));
+            public void write(final int b) throws IOException {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        textArea.appendText(String.valueOf((char) b));
+                    }
+                });
             }
         }));
 
@@ -132,7 +152,6 @@ public class FxApplication extends Application {
         }
         pane.add(vBox, 1, 5, 3, 5);
 
-
-        Platform.runLater(primaryStage::show);
+        primaryStage.show();
     }
 }

@@ -10,26 +10,29 @@ public class Crack implements ServerContext {
     public String executeCommand(Map<String, String> request) {
         String md5 = request.get("md5");
 
-        Commands commander = new Commands();
+        final Commands commander = new Commands();
 
-        String sendip = Util.getCurrentIp();
-        int sendport = new Commands().getServer().getPort();
-        String requestId = String.valueOf(commander.incrementReqCount()+"ID");
+        final String sendip = Util.getCurrentIp();
+        final int sendport = new Commands().getServer().getPort();
+        final String requestId = String.valueOf(commander.incrementReqCount()+"ID");
         commander.getResultsDoneFlags().put(requestId, false);
-        int ttlValue = commander.getTtl();
+        final int ttlValue = commander.getTtl();
 
         commander.getResultsMap().put(requestId, null);
         commander.getMd5Tasks().put(requestId, md5);
 
-        new Thread(() -> {
-            commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
-                    String.format("sendip=%s", sendip),
-                    String.format("sendport=%s", sendport),
-                    String.format("id=%s", requestId),
-                    String.format("ttl=%s", ttlValue),
-                    String.format("noask=%s", String.format("%s_%s", sendip, sendport))
-            );
-        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
+                        String.format("sendip=%s", sendip),
+                        String.format("sendport=%s", sendport),
+                        String.format("id=%s", requestId),
+                        String.format("ttl=%s", ttlValue),
+                        String.format("noask=%s", String.format("%s_%s", sendip, sendport))
+                );
+            }
+        } ).start();
 
 
         for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++){
