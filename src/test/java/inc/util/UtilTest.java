@@ -39,6 +39,13 @@ public class UtilTest {
         System.out.println(md5);
     }
 
+    @Test
+    public void testGetStringTemplatesFromRanges(){
+        String[] result = Util.getStringTemplatesFromRanges("[\"k??r\", \"aa\"]");
+        assertEquals("k??r", result[0]);
+        assertEquals("aa", result[1]);
+    }
+
 
     @Test
     public void testGetKnownComputersFromJson(){
@@ -183,5 +190,16 @@ public class UtilTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testGetSymbolrange() throws Exception {
+        int[][] result = Util.getSymbolrange("[ [10, 100] ,[1, 9], [ 2 , 8]]");
+        assertEquals(10, result[0][0]);
+        assertEquals(100, result[0][1]);
+        assertEquals(1, result[1][0]);
+        assertEquals(9, result[1][1]);
+        assertEquals(2, result[2][0]);
+        assertEquals(8, result[2][1]);
     }
 }

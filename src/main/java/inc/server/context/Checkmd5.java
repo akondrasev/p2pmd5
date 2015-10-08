@@ -17,9 +17,9 @@ public class Checkmd5 implements ServerContext {
         String toPort = request.get("port");
         String md5 = request.get("md5");
         String requestId = request.get("id");
-        String ranges = request.get("ranges");// should be String[]
+        String[] ranges = Util.getStringTemplatesFromRanges(request.get("ranges"));
         String wildcard = request.get("wildcard");//symbol
-        String symbolrange = request.get("symbolrange");//should be int[][]
+        int[][] symbolrange = Util.getSymbolrange(request.get("symbolrange"));
 
         final String finalRequestId = requestId;
         new Thread(() -> {
