@@ -4,6 +4,11 @@ public class CrackResult {
     private String resultCode;
     private String resultstring;
 
+    public CrackResult(String resultCode, String resultstring) {
+        this.resultCode = resultCode;
+        this.resultstring = resultstring;
+    }
+
     public CrackResult() {
     }
 

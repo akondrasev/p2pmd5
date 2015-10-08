@@ -31,64 +31,9 @@ public class Util {
         for (int i = 0; i < ranges.length; i++) {
             String template = ranges[i];
 //            new Thread(new Md5Worker(md5, template, symbolrange, wildcard)).start();
-            new Md5Worker(md5, template, symbolrange, wildcard).run();
+            String resultstring = new Md5Worker(md5, template, symbolrange, wildcard).work();
         }
         return reslut;
-    }
-
-    private static class Md5Worker implements Runnable {
-        private String md5;
-        private String template;
-        private int[][] symbolranges;
-        private String wildcard;
-
-        private Md5Worker(String md5, String template, int[][] symbolranges, String wildcard) {
-            this.md5 = md5;
-            this.template = template;
-            this.symbolranges = symbolranges;
-            this.wildcard = wildcard;
-        }
-        private void checkMd5(String md5, String template, int[][] symbolranges, String wildcard){
-            for(int[] range : symbolranges){
-                Util.println("Working with range: %s", Arrays.toString(range));
-                checkRange(md5, template, range, wildcard);
-            }
-        }
-        private void checkRange(String md5, String template, int[] symbolranges, String wildcard){
-            int minRange = symbolranges[0];
-            int maxRange = symbolranges[1];
-            char[] word = template.toCharArray();
-            char wildcardChar = wildcard.charAt(0);
-            Util.println(template);
-
-            if(md5(template).equals(md5)){
-                Util.println("Done: %s",template);
-                return;
-            }
-
-            while(minRange <= maxRange){
-                char tmp = (char) minRange++;
-                for(int i = 0; i < word.length; i++){
-                    char currentWordChar = word[i];
-
-                    if(currentWordChar == wildcardChar){
-                        word[i] = tmp;
-                        checkRange(md5, String.valueOf(word), symbolranges, wildcard);
-                    }
-                }
-
-                if(md5(template).equals(md5)){
-                    Util.println("Done: %s",template);
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void run() {
-            Util.println("Start working on word: %s", template);
-            checkMd5(md5, template, symbolranges, wildcard);
-        }
     }
 
     public synchronized static int[] checkWildcards(String word, char wildcard) {
