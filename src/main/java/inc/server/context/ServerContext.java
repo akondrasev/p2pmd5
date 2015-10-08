@@ -7,5 +7,7 @@ public interface ServerContext {
     int UNKNOWN_CONTEXT_CODE = 1;
     int WRONG_REQUEST_PARAMS_CODE = 2;
     int IGNORED_REQUEST_CODE = 3;
+    int CANNOT_READ_FROM_SOCKET = 4;
+
     String executeCommand(Map<String, String> request);
 }

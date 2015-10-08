@@ -35,25 +35,44 @@ public class HttpRequestHandler implements Runnable {
     public void run() {
         try (
                 InputStreamReader in = new InputStreamReader(socket.getInputStream());
-                PrintWriter out = new PrintWriter(socket.getOutputStream())
+                OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream())
         ) {
             StringBuilder stringBuilder = new StringBuilder();
 
             char temp;
-            while (in.ready()) {//GET, content-length check and break
+            boolean startedReading = false;
+            Thread.sleep(50L);// otherwise in.ready randomly says false and cannot read smth
+            while (in.ready()) {
+                if(!startedReading){
+                    startedReading = true;
+                }
                 temp = (char) in.read();
+                System.out.print(String.valueOf(temp));
                 stringBuilder.append(temp);
+            }
+
+            if(!startedReading){
+                System.out.println("There occures troubles with reading data");
+                out.write(ServerContext.CANNOT_READ_FROM_SOCKET);
+                out.flush();
+                return;
             }
 
             parseRequestStream(stringBuilder.toString());
 
-            out.print(processContext(context));
+            out.write(processContext(context));
             out.flush();
-        } catch (IOException ignored) {
+            socket.close();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     private void parseRequestStream(String socketInputText){
+        if(socketInputText.equals("")){
+            return;
+        }
+
         String[] lines = socketInputText.split(Util.CRLF);
         boolean isJson = false;
 
