@@ -24,8 +24,19 @@ public class UtilTest {
         int[] range1 = new int[]{32, 64};
         int[] range2 = new int[]{65, 127};
         int[][] symbolrange = new int[][]{range2};
-        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", "?", new String[]{"k??r", "?oala"}, symbolrange);
-//        assertEquals("koer", result.getResultstring());
+        Long time = System.currentTimeMillis();
+        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{"  e "}, symbolrange);
+        time = System.currentTimeMillis() - time;
+        double seconds = time / 1000.0;
+        double minutes = seconds / 60;
+
+        if(seconds >= 60){
+            System.out.println(String.format("Time: %f minutes", minutes));
+        } else {
+            System.out.println(String.format("Time: %f seconds", seconds));
+        }
+
+        assertEquals("koer", result.getResultstring());
     }
 
     @Test

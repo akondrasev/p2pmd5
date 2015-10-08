@@ -31,7 +31,7 @@ public class Md5Worker {
         int maxRange = symbolranges[1];
         char[] word = template.toCharArray();
         char wildcardChar = wildcard.charAt(0);
-        System.out.println(String.format("Check: %s", template));
+//        System.out.println(String.format("Check: %s", template));
 
         if(Util.md5(template).equals(md5)){
             return template;
@@ -56,7 +56,7 @@ public class Md5Worker {
 
     public String work(){
         String result = checkMd5(md5, template, symbolranges, wildcard);
-        System.out.println(result);
+//        System.out.println(String.format("Result: %s", result));
         return result;
     }
 

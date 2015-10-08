@@ -26,12 +26,13 @@ public class Util {
     }
 
     public synchronized static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
-        CrackResult reslut = null;
+        CrackResult reslut = new CrackResult();
         //TODO check md5
         for (int i = 0; i < ranges.length; i++) {
             String template = ranges[i];
-//            new Thread(new Md5Worker(md5, template, symbolrange, wildcard)).start();
             String resultstring = new Md5Worker(md5, template, symbolrange, wildcard).work();
+            reslut.setResultCode("0");
+            reslut.setResultstring(resultstring);
         }
         return reslut;
     }
