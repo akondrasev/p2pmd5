@@ -1,6 +1,7 @@
 package inc.util;
 
 import inc.dto.CrackResult;
+import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,24 +21,29 @@ public class Util {
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
 
-    public synchronized static String getCmd(String input) {
+    public static String getCmd(String input) {
         String[] inputWords = input.trim().split(" ");
         return inputWords[0].trim();
     }
 
-    public synchronized static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
+    public static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
         CrackResult reslut = new CrackResult();
-        //TODO check md5
         for (int i = 0; i < ranges.length; i++) {
             String template = ranges[i];
             String resultstring = new Md5Worker(md5, template, symbolrange, wildcard).work();
-            reslut.setResultCode("0");
-            reslut.setResultstring(resultstring);
+
+            if (resultstring != null) {
+                reslut.setResultCode(0);
+                reslut.setResultstring(resultstring);
+                break;
+            }
+
+            reslut.setResultCode(1);
         }
         return reslut;
     }
 
-    public synchronized static int[] checkWildcards(String word, char wildcard) {
+    public static int[] checkWildcards(String word, char wildcard) {
         int count = 0;
         int lastIndex = -1;
         String indexes = "";
@@ -59,7 +65,7 @@ public class Util {
     }
 
 
-    private synchronized static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange) {
+    private static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange) {
         int maxRange = symbolrange[1];
         int minRange = symbolrange[0];
 
@@ -101,11 +107,11 @@ public class Util {
 
     }
 
-    public synchronized static void println(String msg, Object... params) {
+    public static void println(String msg, Object... params) {
         System.out.println(String.format(msg, params));
     }
 
-    public synchronized static String[] getKnownComputersFromJson(String json) {
+    public static String[] getKnownComputersFromJson(String json) {
         String tempjson = json.replaceAll(" ", "");
         tempjson = tempjson.replaceAll("\"", "");
         tempjson = tempjson.substring(1, tempjson.length() - 1);
@@ -124,7 +130,7 @@ public class Util {
         return tmp;
     }
 
-    public synchronized static String getHostFromUrl(String url) {
+    public static String getHostFromUrl(String url) {
         String result;
 
         String[] tmp = url.split("http://");
@@ -139,7 +145,7 @@ public class Util {
         return result;
     }
 
-    public static synchronized String getCurrentIp() {
+    public static String getCurrentIp() {
         String host = null;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
@@ -151,7 +157,8 @@ public class Util {
     }
 
 
-    public synchronized static Map<String, String> getRequestFromJson(String json) {
+    public static Map<String, String> getRequestFromJson(String json) {
+        JSONObject jsonObject = new JSONObject().getJSONObject(json);
         Map<String, String> result = new TreeMap<>();
         String tempJson = json.trim();
         tempJson = tempJson.replaceAll("\"", "");
@@ -166,24 +173,24 @@ public class Util {
 
             if (key_valuePair.length == 1) {
                 String value = result.get(lastKey);
-                value = value + "," + key_valuePair[0].trim();
+                value = value + "," + key_valuePair[0];
                 result.put(lastKey, value);
                 continue;
             }
 
             String existingValue = result.get(key_valuePair[0]);
             if (existingValue != null) {
-                existingValue += "," + key_valuePair[1].trim();
+                existingValue += "," + key_valuePair[1];
                 result.put(key_valuePair[0].trim(), existingValue);
             } else {
-                result.put(key_valuePair[0].trim(), key_valuePair[1].trim());
+                result.put(key_valuePair[0].trim(), key_valuePair[1]);
             }
             lastKey = key_valuePair[0].trim();
         }
         return result;
     }
 
-    private synchronized static String clearListsFromSpaces(String input, int startIndex) {
+    private static String clearListsFromSpaces(String input, int startIndex) {
         int openList = input.indexOf('[', startIndex);
         if (openList > -1) {
             int closeList = input.indexOf(']', startIndex);
@@ -196,7 +203,7 @@ public class Util {
         }
     }
 
-    public synchronized static String[] getCmdParams(String input) {
+    public static String[] getCmdParams(String input) {
         input = clearListsFromSpaces(input, 0);
 
         String[] inputWords = input.trim().split(" ");
@@ -213,7 +220,7 @@ public class Util {
     }
 
 
-    public synchronized static String parseStringArrayToJson(String... params) {
+    public static String parseStringArrayToJson(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("{");
@@ -250,7 +257,7 @@ public class Util {
         return stringBuilder.toString();
     }
 
-    public synchronized static String parseArrayToGetParams(String... params) {
+    public static String parseArrayToGetParams(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < params.length; i++) {
             stringBuilder.append(String.valueOf(params[i]));
@@ -263,7 +270,7 @@ public class Util {
         return stringBuilder.toString().length() > 0 ? stringBuilder.toString() : null;
     }
 
-    public synchronized static Map<String, String> getRequestFromStringQuery(String request) {
+    public static Map<String, String> getRequestFromStringQuery(String request) {
         String tmp = request.split("GET ")[1].split(" HTTP")[0].trim();
 
         if (tmp.equals("/") || tmp.equals("")) {
@@ -298,7 +305,7 @@ public class Util {
         return result;
     }
 
-    public synchronized static String getRequestContext(String host) {
+    public static String getRequestContext(String host) {
         String[] arr = host.split("/");
 
         if (arr.length <= 1) {
@@ -308,7 +315,7 @@ public class Util {
         return "/" + arr[1].split("\\?")[0].split("HTTP")[0].trim();
     }
 
-    public synchronized static String readJsonFromFile(String file) {
+    public static String readJsonFromFile(String file) {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
@@ -344,18 +351,18 @@ public class Util {
         return result.toString();
     }
 
-    public synchronized static String[] getStringTemplatesFromRanges(String ranges) {
-        String tmp = ranges.replaceAll("\"", "");
-        tmp = tmp.substring(1, tmp.length() - 1);
-        String[] templates = tmp.split(",");
-        for (int i = 0; i < templates.length; i++) {
-            templates[i] = templates[i].trim();
-        }
+    public static String[] getStringTemplatesFromRanges(String ranges) {
+//        String tmp = ranges.replaceAll("\"", "");
+//        tmp = tmp.substring(1, tmp.length() - 1);
+        String[] templates = ranges.split(",");
+//        for (int i = 0; i < templates.length; i++) {
+//            templates[i] = templates[i].trim();
+//        }
 
         return templates;
     }
 
-    public synchronized static String md5(String value) {
+    public static String md5(String value) {
         MessageDigest mdEnc = null;
         try {
             mdEnc = MessageDigest.getInstance("MD5");
@@ -367,7 +374,7 @@ public class Util {
         return new BigInteger(1, mdEnc.digest()).toString(16);
     }
 
-    public synchronized static int[][] getSymbolrange(String symbolrange) {
+    public static int[][] getSymbolrange(String symbolrange) {
         String tempjson = symbolrange.replaceAll(" ", "");
         tempjson = tempjson.substring(1, tempjson.length() - 1);// now: [10,10],[10,10],[10,10]
         tempjson = tempjson.replaceAll("\\[", "");
@@ -379,7 +386,7 @@ public class Util {
         int currentIndex = 0;
         for (int i = 0; i < numbers.length; i++) {
             int secondIndex = 0;
-            if((i % 2) == 1){
+            if ((i % 2) == 1) {
                 secondIndex = 1;
             }
             if ((i % 2) == 0 && i > 1) {

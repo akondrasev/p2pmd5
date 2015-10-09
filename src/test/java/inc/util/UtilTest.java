@@ -22,10 +22,10 @@ public class UtilTest {
     public void testCheckMd5(){
 //        32 - 127 ASCII chars
         int[] range1 = new int[]{32, 64};
-        int[] range2 = new int[]{65, 127};
+        int[] range2 = new int[]{32, 126};
         int[][] symbolrange = new int[][]{range2};
         Long time = System.currentTimeMillis();
-        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{"  e "}, symbolrange);
+        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{"    "}, symbolrange);
         time = System.currentTimeMillis() - time;
         double seconds = time / 1000.0;
         double minutes = seconds / 60;
@@ -53,7 +53,7 @@ public class UtilTest {
 
     @Test
     public void testGetStringTemplatesFromRanges(){
-        String[] result = Util.getStringTemplatesFromRanges("[\"k??r\", \"aa\"]");
+        String[] result = Util.getStringTemplatesFromRanges("[k??r, aa]");
         assertEquals("k??r", result[0]);
         assertEquals("aa", result[1]);
     }
@@ -173,7 +173,7 @@ public class UtilTest {
         assertEquals("192.168.10.76", result.get("ip"));
         assertEquals("1111", result.get("port"));
         assertEquals("123", result.get("id"));
-        assertEquals("[ax?o?ssss,aa,ab,ab]", result.get("ranges"));
+        assertEquals("[ax?o?ssss, aa, ab, ab]", result.get("ranges"));
         assertEquals("[[3,10],[100,150]]", result.get("symbolrange"));
         assertEquals("result string on selline", result.get("resultstring"));
     }

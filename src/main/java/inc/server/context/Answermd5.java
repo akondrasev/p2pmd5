@@ -23,8 +23,8 @@ public class Answermd5 implements ServerContext {
             return String.valueOf(ServerContext.IGNORED_REQUEST_CODE);
         }
 
-        commander.getResultsDoneFlags().put(requestId, true);
 
+        commander.getResultsDoneFlags().put(requestId, true);
         String resultCode = request.get("result");
         if (resultCode.equals(OK_ANSWER)) {
             commander.getResultsMap().put(requestId, request.get("resultstring"));

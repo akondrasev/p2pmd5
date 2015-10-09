@@ -1,5 +1,6 @@
 package inc.server.context;
 
+import inc.dto.CrackResult;
 import inc.util.Commands;
 import inc.util.Util;
 
@@ -10,25 +11,21 @@ public class Checkmd5 implements ServerContext {
     @Override
     public String executeCommand(Map<String, String> request) {
         final Commands commander = new Commands();
-        commander.setWorking(true);
-
 
         final String toIp = request.get("ip");
         final String toPort = request.get("port");
         final String md5 = request.get("md5");
         String requestId = request.get("id");
-        String[] ranges = Util.getStringTemplatesFromRanges(request.get("ranges"));
-        String wildcard = request.get("wildcard");//symbol
-        int[][] symbolrange = Util.getSymbolrange(request.get("symbolrange"));
+        final String[] ranges = Util.getStringTemplatesFromRanges(request.get("ranges"));
+        final String wildcard = request.get("wildcard");//symbol
+        final int[][] symbolrange = Util.getSymbolrange(request.get("symbolrange"));
 
         final String finalRequestId = requestId;
-        new Thread(new Runnable() {
+        new Thread(new ThreadGroup("Cracker"), new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(7000L);//TODO working bruteforce here, parse params as needed for method below
-//                String result = Util.checkMd5();
-                } catch (InterruptedException ignored) {}
+                commander.setWorking(true);
+                CrackResult result = Util.checkMd5(md5, wildcard, ranges, symbolrange);
 
                 commander.setWorking(false);
                 commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
@@ -36,11 +33,11 @@ public class Checkmd5 implements ServerContext {
                         String.format("ip=%s", Util.getCurrentIp()),
                         String.format("id=%s", finalRequestId),
                         String.format("md5=%s", md5),
-                        String.format("result=%s", 0),
-                        String.format("resultstring=%s", "koer")
+                        String.format("result=%s", result.getResultCode()),
+                        String.format("resultstring=%s", result.getResultstring())
                 );
             }
-        } ).start();
+        }, "crack process", 1024).start();
 
         return String.valueOf(ServerContext.OK_CODE);
     }

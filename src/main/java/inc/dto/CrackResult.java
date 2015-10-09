@@ -1,10 +1,10 @@
 package inc.dto;
 
 public class CrackResult {
-    private String resultCode;
+    private int resultCode;
     private String resultstring;
 
-    public CrackResult(String resultCode, String resultstring) {
+    public CrackResult(int resultCode, String resultstring) {
         this.resultCode = resultCode;
         this.resultstring = resultstring;
     }
@@ -12,11 +12,11 @@ public class CrackResult {
     public CrackResult() {
     }
 
-    public String getResultCode() {
+    public int getResultCode() {
         return resultCode;
     }
 
-    public void setResultCode(String resultCode) {
+    public void setResultCode(int resultCode) {
         this.resultCode = resultCode;
     }
 

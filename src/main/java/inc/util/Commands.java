@@ -26,7 +26,7 @@ public class Commands {
     public static String[] computers;
     private static boolean working = false;
     private static int ttl = 3;
-    private static int timeout = 20;
+    private static int timeout = 1000;
     private static HashMap<String, String> results = new HashMap<>();
     private static HashMap<String, Boolean> resultsDoneFlags = new HashMap<>();
     private static HashMap<String, String> md5Tasks = new HashMap<>();
