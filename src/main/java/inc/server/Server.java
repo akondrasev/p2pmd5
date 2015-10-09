@@ -15,10 +15,11 @@ public class Server implements Runnable {
     }
 
     public void run() {
+        ThreadGroup threadGroup = new ThreadGroup("requestHandlerGroup");
         while (isRunning) {
             try {
                 Socket socket = serverSocket.accept();
-                new Thread(new HttpRequestHandler(socket)).start();
+                new Thread(threadGroup, new HttpRequestHandler(socket), "handler", 2048).start();
             } catch (IOException ignored) {
             }
         }

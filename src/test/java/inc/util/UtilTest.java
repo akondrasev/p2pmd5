@@ -22,7 +22,7 @@ public class UtilTest {
     }
 
     @Test
-    public void testCheckMd5(){
+    public void testCheckMd5() {
 //        32 - 127 ASCII chars
         int[] range1 = new int[]{32, 64};
         int[] range2 = new int[]{32, 126};
@@ -33,7 +33,7 @@ public class UtilTest {
         double seconds = time / 1000.0;
         double minutes = seconds / 60;
 
-        if(seconds >= 60){
+        if (seconds >= 60) {
             System.out.println(String.format("Time: %f minutes", minutes));
         } else {
             System.out.println(String.format("Time: %f seconds", seconds));
@@ -43,13 +43,13 @@ public class UtilTest {
     }
 
     @Test
-    public void testMd5(){
+    public void testMd5() {
         String md5 = Util.md5("koer");//68e1c85222192b83c04c0bae564b493d
         assertEquals("68e1c85222192b83c04c0bae564b493d", md5);
     }
 
     @Test
-    public void testGetStringTemplatesFromRanges(){
+    public void testGetStringTemplatesFromRanges() {
         String[] result = Util.getStringTemplatesFromRanges("[\"k??r\", \"aa\"]");
         assertEquals("k??r", result[0]);
         assertEquals("aa", result[1]);
@@ -57,7 +57,7 @@ public class UtilTest {
 
 
     @Test
-    public void testGetKnownComputersFromJson(){
+    public void testGetKnownComputersFromJson() {
         String[] result = Util.getKnownComputersFromJson("[[\"127.0.0.1\",\"1111\"],[\"127.0.0.1\",\"2222\"],[\"127.0.0.1\",\"3333\"]]");
         assertEquals("127.0.0.1:1111", result[0]);
     }
@@ -171,7 +171,7 @@ public class UtilTest {
         String containment = "[[\"127.0.0.1\",\"1111\" ],[ \"127.0.0.1\", \"2222\"],[\"127.0.0.1\", \"3333\" ] ]";
         try {
             boolean isFileCreated = newFile.createNewFile();
-            if(isFileCreated){
+            if (isFileCreated) {
                 boolean exists = newFile.exists();
                 assertTrue(exists);
 

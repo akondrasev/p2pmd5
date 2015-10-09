@@ -3,7 +3,6 @@ package inc.util;
 import inc.dto.CrackResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,10 +12,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 
 public class Util {
 
@@ -46,7 +43,7 @@ public class Util {
         JSONArray jsonArray = new JSONArray(json);
         String[] result = new String[jsonArray.length()];
 
-        for(int i = 0; i < result.length; i++){
+        for (int i = 0; i < result.length; i++) {
             JSONArray currentComp = jsonArray.getJSONArray(i);
             result[i] = currentComp.getString(0) + ":" + currentComp.getString(1);
         }
@@ -85,7 +82,7 @@ public class Util {
         Map<String, String> result = new TreeMap<>();
         JSONObject jsonObject = new JSONObject(json);
 
-        for(String key : jsonObject.keySet()){
+        for (String key : jsonObject.keySet()) {
             result.put(key, jsonObject.get(key).toString());
         }
 
@@ -95,9 +92,9 @@ public class Util {
     public static JSONObject parseStringArrayToJson(String... params) {
         JSONObject jsonObject = new JSONObject();
 
-        for(String string : params){
+        for (String string : params) {
             String[] keyValue = string.split("=");
-            if(keyValue[1].startsWith("[")){
+            if (keyValue[1].startsWith("[")) {
                 JSONArray jsonArray = new JSONArray(keyValue[1]);
                 jsonObject.put(keyValue[0], jsonArray);
                 continue;
@@ -106,7 +103,7 @@ public class Util {
             try {
                 int test = Integer.parseInt(keyValue[1]);
                 jsonObject.put(keyValue[0], test);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 jsonObject.put(keyValue[0], keyValue[1]);
             }
         }
@@ -212,7 +209,7 @@ public class Util {
         JSONArray jsonArray = new JSONArray(ranges);
         String[] result = new String[jsonArray.length()];
 
-        for (int i = 0; i < result.length; i++){
+        for (int i = 0; i < result.length; i++) {
             result[i] = jsonArray.getString(i);
         }
         return result;

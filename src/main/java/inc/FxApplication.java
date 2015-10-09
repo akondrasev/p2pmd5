@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -26,7 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-//http://127.0.0.1:1111/resource?sendip=127.0.0.1&sendport=1111&ttl=3&id=123&noask=192.168.10.76_1111&noask=127.0.0.1_1111
+//TODO allow user setting timeout property
 public class FxApplication extends Application {
 
     private Commands commander = new Commands();

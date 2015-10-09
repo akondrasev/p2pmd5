@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Resourcereply implements ServerContext {
 
-    private String getNextTask(){
+    private String getNextTask() {
         return "[\"  er\"]";
     }
 

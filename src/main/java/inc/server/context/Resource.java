@@ -1,6 +1,5 @@
 package inc.server.context;
 
-import inc.FxApplication;
 import inc.util.Commands;
 import inc.util.Util;
 
@@ -42,9 +41,8 @@ public class Resource implements ServerContext {
                             String.format("resource=%s", 100)
                     );
                 }
-            } ).start();
+            }).start();
         }
-
 
 
         if (ttlValue > 1 && Commands.computers != null) {
@@ -75,7 +73,7 @@ public class Resource implements ServerContext {
                         }
                     }
                 }
-            } ).start();
+            }).start();
         }
 
         return String.valueOf(ServerContext.OK_CODE);

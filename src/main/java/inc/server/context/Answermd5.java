@@ -1,6 +1,5 @@
 package inc.server.context;
 
-import inc.server.Server;
 import inc.util.Commands;
 
 import java.util.Map;
@@ -19,7 +18,7 @@ public class Answermd5 implements ServerContext {
         String requestId = request.get("id");
         boolean isDoneCurrent = commander.getResultsDoneFlags().get(requestId);
 
-        if(isDoneCurrent){
+        if (isDoneCurrent) {
             return String.valueOf(ServerContext.IGNORED_REQUEST_CODE);
         }
 
@@ -28,9 +27,9 @@ public class Answermd5 implements ServerContext {
         String resultCode = request.get("result");
         if (resultCode.equals(OK_ANSWER)) {
             commander.getResultsMap().put(requestId, request.get("resultstring"));
-        } else if (resultCode.equals(CANNOT_FIND_ANSWER)){
+        } else if (resultCode.equals(CANNOT_FIND_ANSWER)) {
             commander.getResultsMap().put(requestId, "cannot find answer");
-        } else if (resultCode.equals(NO_ENOUGH_TIME_ANSWER)){
+        } else if (resultCode.equals(NO_ENOUGH_TIME_ANSWER)) {
             commander.getResultsMap().put(requestId, "did not have enough time to crack");
         }
 

@@ -3,10 +3,10 @@ package inc.server;
 import inc.server.context.*;
 import inc.util.Util;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -18,6 +18,7 @@ public class HttpRequestHandler implements Runnable {
     private Map<String, ServerContext> allowedContexts;
     private Map<String, String> headers;
     private String context = "/";
+    private boolean correctReadingStarted;
 
     public HttpRequestHandler(Socket socket) {
         this.socket = socket;
@@ -31,68 +32,78 @@ public class HttpRequestHandler implements Runnable {
         allowedContexts.put("/crack", new Crack());
     }
 
+    private String readSocketData(InputStreamReader in) {
+        StringBuilder stringBuilder = new StringBuilder();
+        char temp;
+        try {
+            while (in.ready()) {
+                if (!correctReadingStarted) {
+                    correctReadingStarted = true;
+                }
+                temp = (char) in.read();
+                System.out.print(String.valueOf(temp));
+                stringBuilder.append(temp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!correctReadingStarted) {
+            System.out.println("There occures troubles with reading data");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return readSocketData(in);
+        }
+        return stringBuilder.toString();
+    }
+
     @Override
     public void run() {
         try (
                 InputStreamReader in = new InputStreamReader(socket.getInputStream());
                 OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream())
         ) {
-            StringBuilder stringBuilder = new StringBuilder();
+            String inputData = readSocketData(in);
 
-            char temp;
-            boolean startedReading = false;
-            Thread.sleep(50L);// otherwise in.ready randomly says false and cannot read smth
-            while (in.ready()) {
-                if(!startedReading){
-                    startedReading = true;
-                }
-                temp = (char) in.read();
-                System.out.print(String.valueOf(temp));
-                stringBuilder.append(temp);
-            }
-
-            if(!startedReading){
-                System.out.println("There occures troubles with reading data");
-                out.write(ServerContext.CANNOT_READ_FROM_SOCKET);
-                out.flush();
-                return;
-            }
-
-            parseRequestStream(stringBuilder.toString());
+            parseRequestStream(inputData);
 
             out.write(processContext(context));
             out.flush();
             socket.close();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void parseRequestStream(String socketInputText){
-        if(socketInputText.equals("")){
+    private void parseRequestStream(String socketInputText) {
+        if (socketInputText.equals("")) {
             return;
         }
 
         String[] lines = socketInputText.split(Util.CRLF);
         boolean isJson = false;
 
-        for(int i = 0; i < lines.length; i++){
+        for (int i = 0; i < lines.length; i++) {
             String current = lines[i];
 
-            if(current.contains("GET ")){
+            if (current.contains("GET ")) {
                 request = Util.getRequestFromStringQuery(current);
             }
 
-            if(current.contains("POST ") || current.contains("GET ")){
+            if (current.contains("POST ") || current.contains("GET ")) {
                 context = Util.getRequestContext(current);
                 continue;
             }
 
-            if (current.equals("")){
+            if (current.equals("")) {
                 isJson = true;
                 continue;
             }
-            if(!isJson){
+            if (!isJson) {
                 String[] keyValue_pair = current.split(": ");
                 String key = keyValue_pair[0];
                 String value = keyValue_pair[1];

@@ -14,7 +14,7 @@ public class Crack implements ServerContext {
 
         final String sendip = Util.getCurrentIp();
         final int sendport = new Commands().getServer().getPort();
-        final String requestId = String.valueOf(commander.incrementReqCount()+"ID");
+        final String requestId = String.valueOf(commander.incrementReqCount() + "ID");
         commander.getResultsDoneFlags().put(requestId, false);
         final int ttlValue = commander.getTtl();
 
@@ -32,16 +32,17 @@ public class Crack implements ServerContext {
                         String.format("noask=%s", String.format("%s_%s", sendip, sendport))
                 );
             }
-        } ).start();
+        }).start();
 
 
-        for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++){
+        for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++) {
             if (i > commander.getTimeout()) {
                 return String.format("Timeout %ss", commander.getTimeout());
             }
             try {
                 Thread.sleep(1000L);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
         return String.format("Result for request id '%s': %s = %s", requestId, commander.getResultsMap().get(requestId), md5);
     }
