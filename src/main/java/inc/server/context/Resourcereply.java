@@ -8,7 +8,7 @@ import java.util.Map;
 public class Resourcereply implements ServerContext {
 
     private String getNextTask(){
-        return "  er";
+        return "[\"  er\"]";
     }
 
     @Override
