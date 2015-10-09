@@ -49,7 +49,7 @@ public class HttpRequestHandler implements Runnable {
         }
 
         if (!correctReadingStarted) {
-            System.out.println("There occures troubles with reading data");
+            System.out.println("There occurs troubles with reading data");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
