@@ -74,7 +74,7 @@ public class FxApplication extends Application {
                 serverIndicator.setText("Started: " + port);
                 serverIndicator.setFill(Color.GREEN);
             }
-        } );
+        });
 
         stopServerButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -83,7 +83,7 @@ public class FxApplication extends Application {
                 serverIndicator.setText("Stopped");
                 serverIndicator.setFill(Color.RED);
             }
-        } );
+        });
         textArea.appendText(commander.readConfigFromFile("machines.txt") + Util.CRLF);
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -93,7 +93,7 @@ public class FxApplication extends Application {
                 Platform.exit();
                 System.exit(0);
             }
-        } );
+        });
 
         setTtlButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -143,7 +143,7 @@ public class FxApplication extends Application {
 
 
         VBox vBox = new VBox();
-        if(Commands.computers != null && Commands.computers.length > 0){
+        if (Commands.computers != null && Commands.computers.length > 0) {
             for (String ip : Commands.computers) {
                 Text comp = new Text(ip);
                 comp.setFill(Color.VIOLET);

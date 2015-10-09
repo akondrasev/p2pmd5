@@ -1,7 +1,9 @@
 package inc.util;
 
 import inc.dto.CrackResult;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,17 +16,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 public class Util {
 
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
-
-    public static String getCmd(String input) {
-        String[] inputWords = input.trim().split(" ");
-        return inputWords[0].trim();
-    }
 
     public static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
         CrackResult reslut = new CrackResult();
@@ -43,91 +41,17 @@ public class Util {
         return reslut;
     }
 
-    public static int[] checkWildcards(String word, char wildcard) {
-        int count = 0;
-        int lastIndex = -1;
-        String indexes = "";
 
-        do {
-            lastIndex = word.indexOf(wildcard, lastIndex + 1);
-            if (lastIndex != -1) {
-                count++;
-                indexes += String.valueOf(lastIndex);
-            }
-        } while (lastIndex != -1);
+    public static String[] getKnownComputersFromJson(String json) {
+        JSONArray jsonArray = new JSONArray(json);
+        String[] result = new String[jsonArray.length()];
 
-        int[] result = new int[count];
-        for (int i = 0; i < count; i++) {
-            result[i] = Integer.parseInt(indexes.substring(i, i + 1));
+        for(int i = 0; i < result.length; i++){
+            JSONArray currentComp = jsonArray.getJSONArray(i);
+            result[i] = currentComp.getString(0) + ":" + currentComp.getString(1);
         }
 
         return result;
-    }
-
-
-    private static String checkMd5(String md5, char wildcard, char[] word, int[] symbolrange) {
-        int maxRange = symbolrange[1];
-        int minRange = symbolrange[0];
-
-        if (md5.equals(md5(String.valueOf(word)))) {
-            return String.valueOf(word);
-        }
-
-        for (int i = 0; i < word.length; i++) {
-            if (word[i] == wildcard) {
-                while (minRange <= maxRange) {
-                    char[] tempWord = word.clone();
-                    char tempChar = (char) minRange;
-
-                    if (tempChar == wildcard) {
-                        minRange++;
-                        continue;
-                    }
-
-                    tempWord[i] = tempChar;
-
-                    println(String.valueOf(tempWord));
-
-                    String currentMd5 = md5(String.valueOf(tempWord));
-
-                    if (currentMd5.equals(md5)) {
-                        return String.valueOf(tempWord);
-                    }
-                    minRange++;
-                    return checkMd5(md5, wildcard, tempWord, symbolrange);
-                }
-            }
-        }
-
-        if (md5(String.valueOf(word)).equals(md5)) {
-            return String.valueOf(word);
-        }
-
-        return null;
-
-    }
-
-    public static void println(String msg, Object... params) {
-        System.out.println(String.format(msg, params));
-    }
-
-    public static String[] getKnownComputersFromJson(String json) {
-        String tempjson = json.replaceAll(" ", "");
-        tempjson = tempjson.replaceAll("\"", "");
-        tempjson = tempjson.substring(1, tempjson.length() - 1);
-
-        String[] tmp = tempjson.split("\\],\\[");
-        tmp[0] = tmp[0].replace("[", "");
-        tmp[tmp.length - 1] = tmp[tmp.length - 1].replace("]", "");
-
-
-        for (int i = 0; i < tmp.length; i++) {
-            String current = tmp[i];
-            String[] ipPortPair = current.split(",");
-            tmp[i] = ipPortPair[0] + ":" + ipPortPair[1];
-        }
-
-        return tmp;
     }
 
     public static String getHostFromUrl(String url) {
@@ -158,103 +82,36 @@ public class Util {
 
 
     public static Map<String, String> getRequestFromJson(String json) {
-        JSONObject jsonObject = new JSONObject().getJSONObject(json);
         Map<String, String> result = new TreeMap<>();
-        String tempJson = json.trim();
-        tempJson = tempJson.replaceAll("\"", "");
-//        tempJson = tempJson.replaceAll(" ", "");
-        tempJson = tempJson.substring(1, tempJson.length() - 1);
+        JSONObject jsonObject = new JSONObject(json);
 
+        for(String key : jsonObject.keySet()){
+            result.put(key, jsonObject.get(key).toString());
+        }
 
-        String[] tmp = tempJson.split(",");
-        String lastKey = null;
-        for (String currentString : tmp) {
-            String[] key_valuePair = currentString.split(":");
+        return result;
+    }
 
-            if (key_valuePair.length == 1) {
-                String value = result.get(lastKey);
-                value = value + "," + key_valuePair[0];
-                result.put(lastKey, value);
+    public static JSONObject parseStringArrayToJson(String... params) {
+        JSONObject jsonObject = new JSONObject();
+
+        for(String string : params){
+            String[] keyValue = string.split("=");
+            if(keyValue[1].startsWith("[")){
+                JSONArray jsonArray = new JSONArray(keyValue[1]);
+                jsonObject.put(keyValue[0], jsonArray);
                 continue;
             }
 
-            String existingValue = result.get(key_valuePair[0]);
-            if (existingValue != null) {
-                existingValue += "," + key_valuePair[1];
-                result.put(key_valuePair[0].trim(), existingValue);
-            } else {
-                result.put(key_valuePair[0].trim(), key_valuePair[1]);
-            }
-            lastKey = key_valuePair[0].trim();
-        }
-        return result;
-    }
-
-    private static String clearListsFromSpaces(String input, int startIndex) {
-        int openList = input.indexOf('[', startIndex);
-        if (openList > -1) {
-            int closeList = input.indexOf(']', startIndex);
-            String tmp = input.substring(openList - 1, closeList + 1);
-
-            input = input.replace(tmp, tmp.trim().replaceAll(" ", ""));
-            return clearListsFromSpaces(input, closeList + 1);
-        } else {
-            return input;
-        }
-    }
-
-    public static String[] getCmdParams(String input) {
-        input = clearListsFromSpaces(input, 0);
-
-        String[] inputWords = input.trim().split(" ");
-        int length = inputWords.length - 1;
-
-        for (int i = 0; i < inputWords.length; i++) {
-            inputWords[i] = inputWords[i].trim();
-        }
-
-        String[] result = new String[length];
-        System.arraycopy(inputWords, 1, result, 0, length);
-
-        return result;
-    }
-
-
-    public static String parseStringArrayToJson(String... params) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("{");
-        for (int i = 0; i < params.length; i++) {
-            String[] keyValue_pair = params[i].split("=");
-            String key = keyValue_pair[0];
-            String value = keyValue_pair[1];
-            boolean isNumeric = true;
-
             try {
-                int tmp = Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                isNumeric = false;
-            }
-
-            stringBuilder.append("\"");
-            stringBuilder.append(key);
-            stringBuilder.append("\":");
-            if (!value.startsWith("[") && !isNumeric) {
-                stringBuilder.append("\"");
-            }
-            stringBuilder.append(value);
-            if (!value.endsWith("]") && !isNumeric) {
-                stringBuilder.append("\"");
-            }
-
-
-            if (i != params.length - 1) {
-                stringBuilder.append(", ");
+                int test = Integer.parseInt(keyValue[1]);
+                jsonObject.put(keyValue[0], test);
+            } catch (NumberFormatException e){
+                jsonObject.put(keyValue[0], keyValue[1]);
             }
         }
-        stringBuilder.append("}");
 
-        return stringBuilder.toString();
+        return jsonObject;
     }
 
     public static String parseArrayToGetParams(String... params) {
@@ -352,14 +209,13 @@ public class Util {
     }
 
     public static String[] getStringTemplatesFromRanges(String ranges) {
-//        String tmp = ranges.replaceAll("\"", "");
-//        tmp = tmp.substring(1, tmp.length() - 1);
-        String[] templates = ranges.split(",");
-//        for (int i = 0; i < templates.length; i++) {
-//            templates[i] = templates[i].trim();
-//        }
+        JSONArray jsonArray = new JSONArray(ranges);
+        String[] result = new String[jsonArray.length()];
 
-        return templates;
+        for (int i = 0; i < result.length; i++){
+            result[i] = jsonArray.getString(i);
+        }
+        return result;
     }
 
     public static String md5(String value) {

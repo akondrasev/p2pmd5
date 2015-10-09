@@ -1,11 +1,14 @@
 package inc.util;
 
 import inc.dto.CrackResult;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +28,7 @@ public class UtilTest {
         int[] range2 = new int[]{32, 126};
         int[][] symbolrange = new int[][]{range2};
         Long time = System.currentTimeMillis();
-        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{"    "}, symbolrange);
+        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{" oe "}, symbolrange);
         time = System.currentTimeMillis() - time;
         double seconds = time / 1000.0;
         double minutes = seconds / 60;
@@ -40,12 +43,6 @@ public class UtilTest {
     }
 
     @Test
-    public void testCheckWildcards(){
-        int[] result = Util.checkWildcards("k??r", '?');
-        assertEquals(result.length, 2);
-    }
-
-    @Test
     public void testMd5(){
         String md5 = Util.md5("koer");//68e1c85222192b83c04c0bae564b493d
         assertEquals("68e1c85222192b83c04c0bae564b493d", md5);
@@ -53,7 +50,7 @@ public class UtilTest {
 
     @Test
     public void testGetStringTemplatesFromRanges(){
-        String[] result = Util.getStringTemplatesFromRanges("[k??r, aa]");
+        String[] result = Util.getStringTemplatesFromRanges("[\"k??r\", \"aa\"]");
         assertEquals("k??r", result[0]);
         assertEquals("aa", result[1]);
     }
@@ -76,16 +73,6 @@ public class UtilTest {
         assertEquals("correct URL params", "param1=val1&param2=val2&param3=val3", result);
     }
 
-    @Test
-    public void testParseArrayToPostJson() {
-        String[] params = new String[4];
-        params[0] = "param1=val1";
-        params[1] = "param2=val2";
-        params[2] = "param3=[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]";
-        params[3] = "param4=100";
-        String result = Util.parseStringArrayToJson(params);
-        assertEquals("correct URL params", "{\"param1\":\"val1\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}", result);
-    }
 
     @Test
     public void testGetRequestFromStringQuery() throws Exception {
@@ -132,14 +119,6 @@ public class UtilTest {
     }
 
     @Test
-    public void testGetParamsFromInput() throws Exception {
-        String input = "send post 192.168.10.101:1111/checkmd5 sendip=192.168.10.101 port=1111 id=asdsad md5=md5 ranges=[\"ax?o?ssss\", \"aa\", \"ab\", \"ab\"] wildcard=? symbolrange=[[3,10], [100,150]]";
-        String[] result = Util.getCmdParams(input);
-
-        assertEquals(9, result.length);
-    }
-
-    @Test
     public void testGetHostContext() throws Exception {
         String context = "/";
         assertEquals(context, Util.getRequestContext("localhost"));
@@ -152,7 +131,15 @@ public class UtilTest {
 
     @Test
     public void testParseStringArrayToJson() throws Exception {
+        String[] params = new String[4];
+        params[0] = "param1=val1";
+        params[1] = "param2=val2";
+        params[2] = "param3=[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]";
+        params[3] = "param4=100";
+        JSONObject result = Util.parseStringArrayToJson(params);
 
+        JSONObject expected = new JSONObject("{\"param1\":\"val1\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}");
+        assertEquals(expected.toString(), result.toString());
     }
 
     @Test
@@ -173,7 +160,7 @@ public class UtilTest {
         assertEquals("192.168.10.76", result.get("ip"));
         assertEquals("1111", result.get("port"));
         assertEquals("123", result.get("id"));
-        assertEquals("[ax?o?ssss, aa, ab, ab]", result.get("ranges"));
+        assertEquals("[\"ax?o?ssss\",\"aa\",\"ab\",\"ab\"]", result.get("ranges"));
         assertEquals("[[3,10],[100,150]]", result.get("symbolrange"));
         assertEquals("result string on selline", result.get("resultstring"));
     }

@@ -2,6 +2,7 @@ package inc.util;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import inc.server.Server;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -174,14 +175,14 @@ public class Commands {
                 OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream())
         ) {
             String context = Util.getRequestContext(url);
-            String postData = Util.parseStringArrayToJson(params);
+            JSONObject postData = Util.parseStringArrayToJson(params);
             System.out.println(String.format("post data: %s", postData));
 
             out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
             out.write("Host: www." + url + Util.CRLF);
-            out.write("Content-Length: " + postData.getBytes().length + Util.CRLF);
+            out.write("Content-Length: " + postData.toString().getBytes().length + Util.CRLF);
             out.write(Util.CRLF);
-            out.write(postData);
+            out.write(postData.toString());
             out.write(Util.CRLF);
 
             out.flush();
