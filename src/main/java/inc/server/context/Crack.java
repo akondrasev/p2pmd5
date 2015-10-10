@@ -38,6 +38,7 @@ public class Crack implements ServerContext {
                 stringBuffer.append(" (");
                 stringBuffer.append(commander.getTimeout());
                 stringBuffer.append(" seconds)");
+                commander.getResultsDoneFlags().put(requestId, true);
                 return stringBuffer.toString();
             }
             try {
@@ -45,6 +46,7 @@ public class Crack implements ServerContext {
             } catch (InterruptedException ignored) {
             }
         }
+        commander.getResultsDoneFlags().put(requestId, true);
         return String.format("Result for request id '%s': %s = %s", requestId, commander.getResultsMap().get(requestId), md5);
     }
 

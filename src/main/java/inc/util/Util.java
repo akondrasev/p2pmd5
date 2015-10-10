@@ -2,6 +2,7 @@ package inc.util;
 
 import inc.dto.CrackResult;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
@@ -94,17 +95,27 @@ public class Util {
 
         for (String string : params) {
             String[] keyValue = string.split("=");
-            if (keyValue[1].startsWith("[")) {
-                JSONArray jsonArray = new JSONArray(keyValue[1]);
-                jsonObject.put(keyValue[0], jsonArray);
+            String value = keyValue[1];
+            String key = keyValue[0];
+            if (value.startsWith("[")) {
+                JSONArray jsonArray;
+                try {
+                    jsonArray = new JSONArray(value);
+                } catch (JSONException exception){
+                    jsonArray = new JSONArray();
+                    jsonArray.put("\"   ");
+                }
+
+
+                jsonObject.put(key, jsonArray);
                 continue;
             }
 
             try {
-                int test = Integer.parseInt(keyValue[1]);
-                jsonObject.put(keyValue[0], test);
+                int test = Integer.parseInt(value);
+                jsonObject.put(key, test);
             } catch (NumberFormatException e) {
-                jsonObject.put(keyValue[0], keyValue[1]);
+                jsonObject.put(key, value);
             }
         }
 

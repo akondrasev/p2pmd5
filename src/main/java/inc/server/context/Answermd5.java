@@ -50,7 +50,9 @@ public class Answermd5 implements ServerContext {
         }
 
 
-        Answer answer = new Answer(ip + ":" + port, answerString);
+        String host = ip + ":" + port;
+        String range = commander.getLastTasksMap().get(requestId);
+        Answer answer = new Answer(host, answerString, range);
         List<Answer> answers = commander.getAnswersMap().get(requestId);
 
         if (answers == null) {

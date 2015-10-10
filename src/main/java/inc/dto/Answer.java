@@ -3,10 +3,12 @@ package inc.dto;
 public class Answer {
     private String host;
     private String answer;
+    private String range;
 
-    public Answer(String host, String answer) {
+    public Answer(String host, String answer, String range) {
         this.host = host;
         this.answer = answer;
+        this.range = range;
     }
 
     @Override
@@ -14,6 +16,7 @@ public class Answer {
         return "Answer{" +
                 "host='" + host + '\'' +
                 ", answer='" + answer + '\'' +
+                ", range='" + range + '\'' +
                 '}';
     }
 
@@ -31,5 +34,13 @@ public class Answer {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
     }
 }

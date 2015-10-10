@@ -24,7 +24,7 @@ public class UtilTest {
     @Test
     public void testCheckMd5() {
 //        32 - 127 ASCII chars
-        int[] range2 = new int[]{32, 126};
+        int[] range2 = new int[]{33, 126};
         int[][] symbolrange = new int[][]{range2};
         Long time = System.currentTimeMillis();
         CrackResult result = Util.checkMd5("98ce3010caf21876324addaf1a0f4aa2", " ", new String[]{" a i "}, symbolrange);
@@ -132,13 +132,13 @@ public class UtilTest {
     @Test
     public void testParseStringArrayToJson() throws Exception {
         String[] params = new String[4];
-        params[0] = "param1=val1";
+        params[0] = "param1=val";
         params[1] = "param2=val2";
         params[2] = "param3=[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]";
         params[3] = "param4=100";
         JSONObject result = Util.parseStringArrayToJson(params);
 
-        JSONObject expected = new JSONObject("{\"param1\":\"val1\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}");
+        JSONObject expected = new JSONObject("{\"param1\":\"val\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}");
         assertEquals(expected.toString(), result.toString());
     }
 
