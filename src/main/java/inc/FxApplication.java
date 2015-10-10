@@ -48,17 +48,31 @@ public class FxApplication extends Application {
 
         Label portLabel = new Label("Port:");
         Label ttlLabel = new Label("Ttl:");
+        Label timoutLabel = new Label("Timeout:");
         final TextField textFieldPort = new TextField();
         final TextField ttlTextField = new TextField();
+        final TextField timoutField = new TextField();
         ttlTextField.setText(String.valueOf(commander.getTtl()));
         textFieldPort.setMaxWidth(50);
+        timoutField.setMaxWidth(50);
         ttlTextField.setMaxWidth(50);
         Button startServerButton = new Button("Start Server");
         Button setTtlButton = new Button("Set TTL");
+        Button setTimeout = new Button("Set Timout");
         startServerButton.setDefaultButton(true);
         Button stopServerButton = new Button("Stop Server");
         final TextArea textArea = new TextArea();
         textArea.setEditable(false);
+
+        timoutField.setText(String.valueOf(commander.getTimeout()));
+
+        setTimeout.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int timeout = Integer.parseInt(timoutField.getText());
+                commander.setTimeout(timeout);
+            }
+        });
 
         startServerButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -136,9 +150,13 @@ public class FxApplication extends Application {
         pane.add(ttlTextField, 2, 3);
         pane.add(setTtlButton, 3, 3);
 
+        pane.add(timoutLabel, 1, 4);
+        pane.add(timoutField, 2, 4);
+        pane.add(setTimeout, 3, 4);
+
         pane.add(textArea, 5, 1, 10, 10);
         pane.add(serverIndicator, 4, 3);
-        pane.add(machinesText, 1, 4, 3, 1);
+        pane.add(machinesText, 1, 5, 3, 1);
 
 
         VBox vBox = new VBox();
@@ -149,7 +167,7 @@ public class FxApplication extends Application {
                 vBox.getChildren().add(comp);
             }
         }
-        pane.add(vBox, 1, 5, 3, 5);
+        pane.add(vBox, 1, 6, 3, 5);
 
         primaryStage.show();
     }
