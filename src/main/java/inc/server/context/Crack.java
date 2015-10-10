@@ -1,8 +1,10 @@
 package inc.server.context;
 
+import inc.dto.Answer;
 import inc.util.Commands;
 import inc.util.Util;
 
+import java.util.List;
 import java.util.Map;
 
 public class Crack implements ServerContext {
@@ -37,7 +39,18 @@ public class Crack implements ServerContext {
 
         for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++) {
             if (i > commander.getTimeout()) {
-                return String.format("Timeout %ss", commander.getTimeout());
+                StringBuilder stringBuffer = new StringBuilder();
+                List<Answer> answers = commander.getAnswersMap().get(requestId);
+                if(answers != null){
+                    for(Answer answer : answers){
+                        stringBuffer.append(answer.toString()).append(Util.CRLF);
+                    }
+                }
+                stringBuffer.append("Time is out.");
+                stringBuffer.append(" (");
+                stringBuffer.append(commander.getTimeout());
+                stringBuffer.append(" seconds)");
+                return stringBuffer.toString();
             }
             try {
                 Thread.sleep(1000L);

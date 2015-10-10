@@ -24,11 +24,10 @@ public class UtilTest {
     @Test
     public void testCheckMd5() {
 //        32 - 127 ASCII chars
-        int[] range1 = new int[]{32, 64};
         int[] range2 = new int[]{32, 126};
         int[][] symbolrange = new int[][]{range2};
         Long time = System.currentTimeMillis();
-        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{" oe "}, symbolrange);
+        CrackResult result = Util.checkMd5("98ce3010caf21876324addaf1a0f4aa2", " ", new String[]{" a i "}, symbolrange);
         time = System.currentTimeMillis() - time;
         double seconds = time / 1000.0;
         double minutes = seconds / 60;
@@ -39,12 +38,13 @@ public class UtilTest {
             System.out.println(String.format("Time: %f seconds", seconds));
         }
 
-        assertEquals("koer", result.getResultstring());
+        assertEquals("magia", result.getResultstring());
     }
 
     @Test
     public void testMd5() {
         String md5 = Util.md5("koer");//68e1c85222192b83c04c0bae564b493d
+//        md5 = Util.md5("magia");
         assertEquals("68e1c85222192b83c04c0bae564b493d", md5);
     }
 

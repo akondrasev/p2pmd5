@@ -1,5 +1,6 @@
 package inc.util;
 
+import inc.dto.Answer;
 import inc.server.Server;
 import org.json.JSONObject;
 
@@ -12,6 +13,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Commands {
 
@@ -24,6 +26,7 @@ public class Commands {
     private static HashMap<String, String> results = new HashMap<>();
     private static HashMap<String, Boolean> resultsDoneFlags = new HashMap<>();
     private static HashMap<String, String> md5Tasks = new HashMap<>();
+    private static HashMap<String, List<Answer>> answersMap = new HashMap<>();
 
     static {
         server = new Server();
@@ -35,6 +38,11 @@ public class Commands {
     /*
     synced methods
      */
+    public HashMap<String, List<Answer>> getAnswersMap(){
+        synchronized (Commands.class){
+            return answersMap;
+        }
+    }
     public HashMap<String, String> getMd5Tasks() {
         synchronized (Commands.class) {
             return md5Tasks;

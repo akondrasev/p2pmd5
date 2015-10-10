@@ -23,7 +23,7 @@ public class Md5Worker {
     }
 
     private String checkMd5(String md5, String template, int[][] symbolranges, String wildcard) {
-        int allowedDiff = 200;
+        int allowedDiff = 300;
         String result;
         for (int i = 0; i < symbolranges.length; i++) {
             int[] range = symbolranges[i];
@@ -88,9 +88,8 @@ public class Md5Worker {
     }
 
     public String work() {
-        String result = checkMd5(md5, template, symbolranges, wildcard);
-//        System.out.println(String.format("Result: %s", result));
-        return result;
+        //        System.out.println(String.format("Result: %s", result));
+        return checkMd5(md5, template, symbolranges, wildcard);
     }
 
 }
