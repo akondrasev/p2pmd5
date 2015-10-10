@@ -2,6 +2,7 @@ package inc.server.context;
 
 import inc.dto.Answer;
 import inc.util.Commands;
+import inc.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,9 @@ public class Answermd5 implements ServerContext {
                 break;
             case "1":
                 answerString = "not found";
+                String sendip = Util.getCurrentIp();
+                int sendport = commander.getServer().getPort();
+                new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
             case "2":
                 answerString = "did not find within appropriate time";
@@ -49,7 +53,7 @@ public class Answermd5 implements ServerContext {
         Answer answer = new Answer(ip + ":" + port, answerString);
         List<Answer> answers = commander.getAnswersMap().get(requestId);
 
-        if(answers == null) {
+        if (answers == null) {
             answers = new ArrayList<>();
             commander.getAnswersMap().put(requestId, answers);
         }

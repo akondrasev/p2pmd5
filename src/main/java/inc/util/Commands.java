@@ -27,6 +27,7 @@ public class Commands {
     private static HashMap<String, Boolean> resultsDoneFlags = new HashMap<>();
     private static HashMap<String, String> md5Tasks = new HashMap<>();
     private static HashMap<String, List<Answer>> answersMap = new HashMap<>();
+    private static HashMap<String, String> lastTasksMap = new HashMap<>();
 
     static {
         server = new Server();
@@ -38,6 +39,11 @@ public class Commands {
     /*
     synced methods
      */
+    public HashMap<String, String> getLastTasksMap(){
+        synchronized (Commands.class){
+            return lastTasksMap;
+        }
+    }
     public HashMap<String, List<Answer>> getAnswersMap(){
         synchronized (Commands.class){
             return answersMap;

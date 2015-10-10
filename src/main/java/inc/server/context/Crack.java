@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Crack implements ServerContext {
+    private final Commands commander = new Commands();
     @Override
     public String executeCommand(Map<String, String> request) {
         String md5 = request.get("md5");
-
-        final Commands commander = new Commands();
 
         final String sendip = Util.getCurrentIp();
         final int sendport = new Commands().getServer().getPort();
@@ -23,18 +22,7 @@ public class Crack implements ServerContext {
         commander.getResultsMap().put(requestId, null);
         commander.getMd5Tasks().put(requestId, md5);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
-                        String.format("sendip=%s", sendip),
-                        String.format("sendport=%s", sendport),
-                        String.format("id=%s", requestId),
-                        String.format("ttl=%s", ttlValue),
-                        String.format("noask=%s", String.format("%s_%s", sendip, sendport))
-                );
-            }
-        }).start();
+        sendResource(sendip, sendport, requestId, ttlValue, String.format("%s_%s", sendip, sendport));
 
 
         for (int i = 0; !commander.getResultsDoneFlags().get(requestId); i++) {
@@ -58,5 +46,20 @@ public class Crack implements ServerContext {
             }
         }
         return String.format("Result for request id '%s': %s = %s", requestId, commander.getResultsMap().get(requestId), md5);
+    }
+
+    public void sendResource(final String sendip, final int sendport, final String requestId, final int ttl, final String noask){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                commander.sendRequest("GET", String.format("%s:%s/resource", sendip, sendport),
+                        String.format("sendip=%s", sendip),
+                        String.format("sendport=%s", sendport),
+                        String.format("id=%s", requestId),
+                        String.format("ttl=%s", ttl),
+                        String.format("noask=%s", noask)//String.format("%s_%s", sendip, sendport)
+                );
+            }
+        }).start();
     }
 }

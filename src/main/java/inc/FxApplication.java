@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-//TODO allow user setting timeout property
 public class FxApplication extends Application {
 
     private Commands commander = new Commands();
@@ -71,6 +70,7 @@ public class FxApplication extends Application {
             public void handle(ActionEvent event) {
                 int timeout = Integer.parseInt(timoutField.getText());
                 commander.setTimeout(timeout);
+                textArea.appendText(String.format("Timeout property set to '%d'", timeout) + Util.CRLF);
             }
         });
 
