@@ -27,6 +27,8 @@ public class Answermd5 implements ServerContext {
         }
 
         String answerString = null;
+        String sendip = Util.getCurrentIp();
+        int sendport = commander.getServer().getPort();
         switch (resultCode) {
             case "0":
                 String resultstring = request.get("resultstring");
@@ -36,12 +38,11 @@ public class Answermd5 implements ServerContext {
                 break;
             case "1":
                 answerString = "not found";
-                String sendip = Util.getCurrentIp();
-                int sendport = commander.getServer().getPort();
                 new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
             case "2":
                 answerString = "did not find within appropriate time";
+                new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
         }
 

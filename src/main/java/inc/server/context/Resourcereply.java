@@ -37,6 +37,7 @@ public class Resourcereply implements ServerContext {
         final String toPort = request.get("port");
         final String toIp = request.get("ip");
         final String requestId = request.get("id");
+        final int resource = Integer.parseInt(request.get("resource"));
 
         final String sendip = Util.getCurrentIp();
         final int port = new Commands().getServer().getPort();
@@ -44,7 +45,7 @@ public class Resourcereply implements ServerContext {
         boolean isDoneCurrentTask = commander.getResultsDoneFlags().get(requestId);
 
 
-        if (!isDoneCurrentTask) {
+        if (!isDoneCurrentTask && resource > 0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {

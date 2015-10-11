@@ -28,20 +28,19 @@ public class Resource implements ServerContext {
 
         final String sendip = Util.getCurrentIp();
         final int port = commander.getServer().getPort();
-        if (!commander.isWorking()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    commander.sendRequest(
-                            "POST", String.format("%s:%s/resourcereply", toIp, toPort),
-                            String.format("ip=%s", sendip),
-                            String.format("port=%s", port),
-                            String.format("id=%s", requestId),
-                            String.format("resource=%s", 100)
-                    );
-                }
-            }).start();
-        }
+        final int resource = commander.isWorking() ? 0 : 100;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                commander.sendRequest(
+                        "POST", String.format("%s:%s/resourcereply", toIp, toPort),
+                        String.format("ip=%s", sendip),
+                        String.format("port=%s", port),
+                        String.format("id=%s", requestId),
+                        String.format("resource=%s", resource)
+                );
+            }
+        }).start();
 
 
         if (ttlValue > 1 && Commands.computers != null) {
@@ -54,7 +53,7 @@ public class Resource implements ServerContext {
                     if (noaskAddresses != null) {
                         bonusLength = noaskAddresses.length;
                     }
-                    String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
+                    final String[] allParamsForResourceRequest = new String[4 + bonusLength + 1];
                     allParamsForResourceRequest[0] = String.format("sendip=%s", toIp);
                     allParamsForResourceRequest[1] = String.format("sendport=%s", toPort);
                     allParamsForResourceRequest[2] = String.format("ttl=%s", inThreadTtlValue);
@@ -63,12 +62,19 @@ public class Resource implements ServerContext {
                     allParamsForResourceRequest[allParamsForResourceRequest.length - 1] = "noask=" + sendip + "_" + port;
 
                     for (int i = 0; i < Commands.computers.length; i++) {
+                        final String curent = Commands.computers[i];
+                        if (validateAddress(curent, noaskAddresses)) {
+                            new Thread(new Runnable() {
 
-                        if (validateAddress(Commands.computers[i], noaskAddresses)) {
-                            commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
-                                    allParamsForResourceRequest);
+                                @Override
+                                public void run() {
+                                    commander.sendRequest("GET", String.format("%s/resource", curent),
+                                            allParamsForResourceRequest);
+                                }
+                            });
+
                         } else {
-                            System.out.println(String.format("! noask %s -> do not send here", Commands.computers[i]));
+                            System.out.println(String.format("! noask %s -> do not send here", curent));
                         }
                     }
                 }

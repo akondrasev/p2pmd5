@@ -12,8 +12,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Commands {
 
@@ -21,13 +21,13 @@ public class Commands {
     public static String[] computers;
     private static int reqCounter = 0;
     private static boolean working = false;
-    private static int ttl = 3;
+    private static int ttl = 0;
     private static int timeout = 20;
-    private static HashMap<String, String> results = new HashMap<>();
-    private static HashMap<String, Boolean> resultsDoneFlags = new HashMap<>();
-    private static HashMap<String, String> md5Tasks = new HashMap<>();
-    private static HashMap<String, List<Answer>> answersMap = new HashMap<>();
-    private static HashMap<String, String> lastTasksMap = new HashMap<>();
+    private static final ConcurrentHashMap<String, String> results = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Boolean> resultsDoneFlags = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> md5Tasks = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, List<Answer>> answersMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> lastTasksMap = new ConcurrentHashMap<>();
 
     static {
         server = new Server();
@@ -39,30 +39,30 @@ public class Commands {
     /*
     synced methods
      */
-    public HashMap<String, String> getLastTasksMap(){
-        synchronized (Commands.class){
+    public ConcurrentHashMap<String, String> getLastTasksMap(){
+        synchronized (lastTasksMap){
             return lastTasksMap;
         }
     }
-    public HashMap<String, List<Answer>> getAnswersMap(){
-        synchronized (Commands.class){
+    public ConcurrentHashMap<String, List<Answer>> getAnswersMap(){
+        synchronized (answersMap){
             return answersMap;
         }
     }
-    public HashMap<String, String> getMd5Tasks() {
-        synchronized (Commands.class) {
+    public ConcurrentHashMap<String, String> getMd5Tasks() {
+        synchronized (md5Tasks) {
             return md5Tasks;
         }
     }
 
-    public HashMap<String, Boolean> getResultsDoneFlags() {
-        synchronized (Commands.class) {
+    public ConcurrentHashMap<String, Boolean> getResultsDoneFlags() {
+        synchronized (resultsDoneFlags) {
             return resultsDoneFlags;
         }
     }
 
-    public HashMap<String, String> getResultsMap() {
-        synchronized (Commands.class) {
+    public ConcurrentHashMap<String, String> getResultsMap() {
+        synchronized (results) {
             return results;
         }
     }
@@ -147,8 +147,6 @@ public class Commands {
     }
 
     public String sendRequest(String requestMethod, String url, String... params) {
-        System.out.println(String.format("---> Sending request to %s", url));
-
         int port = 80;
         String host = Util.getHostFromUrl(url);
         String[] address = host.split(":");
@@ -162,7 +160,7 @@ public class Commands {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
-            System.out.println("*** Cannot connect to host");
+            System.out.println(String.format("*** Cannot connect to host %s:%s", host, port));
             return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
             System.out.println("*** Unknown host, check spelling");
@@ -192,6 +190,7 @@ public class Commands {
     }
 
     private String sendPost(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
+        System.out.println(String.format("---> Sending POST request to %s", url));
         String context = Util.getRequestContext(url);
         JSONObject postData = Util.parseStringArrayToJson(params);
         System.out.println(String.format("---> post data:\n\t %s\n", postData));
@@ -217,6 +216,7 @@ public class Commands {
     }
 
     private String sendGet(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
+        System.out.println(String.format("===> Sending GET request to %s", url));
         String context = Util.getRequestContext(url);
         String queryString = Util.parseArrayToGetParams(params);
         System.out.println(String.format("===> query string:\n\t %s\n", queryString));

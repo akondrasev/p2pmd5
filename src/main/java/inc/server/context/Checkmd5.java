@@ -4,9 +4,7 @@ import inc.dto.CrackResult;
 import inc.util.Commands;
 import inc.util.Util;
 
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Checkmd5 implements ServerContext {
     @Override
@@ -21,18 +19,21 @@ public class Checkmd5 implements ServerContext {
         final String wildcard = request.get("wildcard");//symbol
         final int[][] symbolrange = Util.getSymbolrange(request.get("symbolrange"));
 
-        final String finalRequestId = requestId;
         final Thread crackThread = new Thread(new ThreadGroup("Cracker"), new Runnable() {
+
             @Override
             public void run() {
                 commander.setWorking(true);
                 CrackResult result = Util.checkMd5(md5, wildcard, ranges, symbolrange);
 
+                if(!commander.isWorking()){
+                    return;
+                }
                 commander.setWorking(false);
                 commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
                         String.format("port=%s", commander.getServer().getPort()),
                         String.format("ip=%s", Util.getCurrentIp()),
-                        String.format("id=%s", finalRequestId),
+                        String.format("id=%s", requestId),
                         String.format("md5=%s", md5),
                         String.format("result=%s", result.getResultCode()),
                         String.format("resultstring=%s", result.getResultstring())
@@ -42,20 +43,25 @@ public class Checkmd5 implements ServerContext {
 
         crackThread.start();
 
-        Timer timer = new Timer();
+        final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.print("*** Aboritng cracking range '" + ranges[0] + "'");
+                if(!commander.isWorking()){
+                    return;
+                }
+                System.out.print("*** Aboritng cracking range " + Arrays.toString(ranges) + Util.CRLF);
                 crackThread.interrupt();
+                commander.setWorking(false);
 
                 commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
                         String.format("port=%s", commander.getServer().getPort()),
                         String.format("ip=%s", Util.getCurrentIp()),
-                        String.format("id=%s", finalRequestId),
+                        String.format("id=%s", requestId),
                         String.format("md5=%s", md5),
                         String.format("result=%s", 2)
                 );
+                timer.cancel();
             }
         }, 4000);
 

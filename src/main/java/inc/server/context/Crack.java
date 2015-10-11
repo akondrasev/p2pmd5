@@ -19,7 +19,7 @@ public class Crack implements ServerContext {
         commander.getResultsDoneFlags().put(requestId, false);
         final int ttlValue = commander.getTtl();
 
-        commander.getResultsMap().put(requestId, null);
+//        commander.getResultsMap().put(requestId, null);
         commander.getMd5Tasks().put(requestId, md5);
 
         sendResource(sendip, sendport, requestId, ttlValue, String.format("%s_%s", sendip, sendport));
