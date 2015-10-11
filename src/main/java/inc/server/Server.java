@@ -46,6 +46,9 @@ public class Server implements Runnable {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException ignored) {
+            int newport = port + 1;
+            start(newport);
+            return;
         }
 
         serverThread = new Thread(this);

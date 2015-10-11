@@ -41,7 +41,7 @@ public class HttpRequestHandler implements Runnable {
                     correctReadingStarted = true;
                 }
                 temp = (char) in.read();
-                System.out.print(String.valueOf(temp));
+//                System.out.print(String.valueOf(temp));
                 stringBuilder.append(temp);
             }
         } catch (IOException e) {
@@ -49,7 +49,7 @@ public class HttpRequestHandler implements Runnable {
         }
 
         if (!correctReadingStarted) {
-            System.out.println("There occurs troubles with reading data");
+            System.out.println("\n\t***There occurs troubles with reading data");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -115,7 +115,7 @@ public class HttpRequestHandler implements Runnable {
     }
 
     private String processContext(String context) {
-        System.out.println(String.format("Processing request '%s': %s", context, request));
+        System.out.println(String.format("<--- Processing request '%s':\n %s\n", context, request));
         if (context == null) {
             return String.valueOf(ServerContext.UNKNOWN_CONTEXT_CODE);
         }

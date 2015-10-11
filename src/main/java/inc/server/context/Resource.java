@@ -5,7 +5,6 @@ import inc.util.Util;
 
 import java.util.Map;
 
-//post request back {"ip": "55.66.77.88", "port": "6788", "id": "asasasas", "resource": 100 }
 public class Resource implements ServerContext {
 
     @Override
@@ -69,7 +68,7 @@ public class Resource implements ServerContext {
                             commander.sendRequest("GET", String.format("%s/resource", Commands.computers[i]),
                                     allParamsForResourceRequest);
                         } else {
-                            System.out.println(String.format("noask %s -> do not send here", Commands.computers[i]));
+                            System.out.println(String.format("! noask %s -> do not send here", Commands.computers[i]));
                         }
                     }
                 }

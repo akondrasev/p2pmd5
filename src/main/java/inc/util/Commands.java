@@ -147,7 +147,7 @@ public class Commands {
     }
 
     public String sendRequest(String requestMethod, String url, String... params) {
-        System.out.println(String.format("Sending request to %s", url));
+        System.out.println(String.format("---> Sending request to %s", url));
 
         int port = 80;
         String host = Util.getHostFromUrl(url);
@@ -162,13 +162,13 @@ public class Commands {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
         } catch (ConnectException e) {
-            System.out.println("Cannot connect to host");
+            System.out.println("*** Cannot connect to host");
             return String.format("Cannot connect to '%s:%d'", host, port);
         } catch (UnknownHostException e) {
-            System.out.println("Unknown host, check spelling");
+            System.out.println("*** Unknown host, check spelling");
             return String.format("Unknown host '%s', check if host is connected to the network", host);
         } catch (IOException e) {
-            System.out.println("Cannot open socket");
+            System.out.println("*** Cannot open socket");
             return "Cannot open socket connection";
         }
 
@@ -194,10 +194,10 @@ public class Commands {
     private String sendPost(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
         String context = Util.getRequestContext(url);
         JSONObject postData = Util.parseStringArrayToJson(params);
-        System.out.println(String.format("post data: %s", postData));
+        System.out.println(String.format("---> post data:\n\t %s\n", postData));
 
         out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
-        out.write("Host: " + url + Util.CRLF);
+        out.write("Host: " + Util.getHostFromUrl(url) + Util.CRLF);
         out.write("Content-Length: " + postData.toString().getBytes().length + Util.CRLF);
         out.write(Util.CRLF);
         out.write(postData.toString() + Util.CRLF);
@@ -209,9 +209,9 @@ public class Commands {
         System.out.println(response);
 
         if (response == '0') {
-            System.out.println("OK");
+            System.out.println("<--- OK");
         } else {
-            System.out.println("ne OK");
+            System.out.println("<--- ne OK");
         }
         return String.valueOf(response);
     }
@@ -219,7 +219,7 @@ public class Commands {
     private String sendGet(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
         String context = Util.getRequestContext(url);
         String queryString = Util.parseArrayToGetParams(params);
-        System.out.println(String.format("query string: %s", queryString));
+        System.out.println(String.format("===> query string:\n\t %s\n", queryString));
 
         if (queryString != null) {
             context = context + "?" + queryString;
@@ -235,9 +235,9 @@ public class Commands {
         System.out.println(response);
 
         if (response == '0') {
-            System.out.println("OK");
+            System.out.println("<=== OK");
         } else {
-            System.out.println("ne OK");
+            System.out.println("<=== ne OK");
         }
 
         return String.valueOf(response);

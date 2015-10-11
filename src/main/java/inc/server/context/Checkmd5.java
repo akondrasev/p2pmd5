@@ -5,6 +5,8 @@ import inc.util.Commands;
 import inc.util.Util;
 
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Checkmd5 implements ServerContext {
     @Override
@@ -14,13 +16,13 @@ public class Checkmd5 implements ServerContext {
         final String toIp = request.get("ip");
         final String toPort = request.get("port");
         final String md5 = request.get("md5");
-        String requestId = request.get("id");
+        final String requestId = request.get("id");
         final String[] ranges = Util.getStringTemplatesFromRanges(request.get("ranges"));
         final String wildcard = request.get("wildcard");//symbol
         final int[][] symbolrange = Util.getSymbolrange(request.get("symbolrange"));
 
         final String finalRequestId = requestId;
-        new Thread(new ThreadGroup("Cracker"), new Runnable() {
+        final Thread crackThread = new Thread(new ThreadGroup("Cracker"), new Runnable() {
             @Override
             public void run() {
                 commander.setWorking(true);
@@ -36,7 +38,26 @@ public class Checkmd5 implements ServerContext {
                         String.format("resultstring=%s", result.getResultstring())
                 );
             }
-        }, "crack process", 1024).start();
+        }, "crack process", 1024);
+
+        crackThread.start();
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.print("*** Aboritng cracking range '" + ranges[0] + "'");
+                crackThread.interrupt();
+
+                commander.sendRequest("POST", String.format("%s:%s/answermd5", toIp, toPort),
+                        String.format("port=%s", commander.getServer().getPort()),
+                        String.format("ip=%s", Util.getCurrentIp()),
+                        String.format("id=%s", finalRequestId),
+                        String.format("md5=%s", md5),
+                        String.format("result=%s", 2)
+                );
+            }
+        }, 4000);
 
         return String.valueOf(ServerContext.OK_CODE);
     }

@@ -27,7 +27,7 @@ public class UtilTest {
         int[] range2 = new int[]{33, 126};
         int[][] symbolrange = new int[][]{range2};
         Long time = System.currentTimeMillis();
-        CrackResult result = Util.checkMd5("98ce3010caf21876324addaf1a0f4aa2", " ", new String[]{" a i "}, symbolrange);
+        CrackResult result = Util.checkMd5("68e1c85222192b83c04c0bae564b493d", " ", new String[]{"k   "}, symbolrange);
         time = System.currentTimeMillis() - time;
         double seconds = time / 1000.0;
         double minutes = seconds / 60;
@@ -38,7 +38,7 @@ public class UtilTest {
             System.out.println(String.format("Time: %f seconds", seconds));
         }
 
-        assertEquals("magia", result.getResultstring());
+        assertEquals("koer", result.getResultstring());
     }
 
     @Test
