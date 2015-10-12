@@ -43,7 +43,7 @@ public class Resource implements ServerContext {
         }).start();
 
 
-        if (ttlValue > 1 && Commands.computers != null) {
+        if (ttlValue > 0 && Commands.computers != null) {
             final int inThreadTtlValue = ttlValue;
             new Thread(new Runnable() {
                 @Override
@@ -71,7 +71,7 @@ public class Resource implements ServerContext {
                                     commander.sendRequest("GET", String.format("%s/resource", curent),
                                             allParamsForResourceRequest);
                                 }
-                            });
+                            }).start();
 
                         } else {
                             System.out.println(String.format("! noask %s -> do not send here", curent));

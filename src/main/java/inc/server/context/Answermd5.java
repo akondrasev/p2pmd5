@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-// {"ip": "55.66.77.88", "port": "6788", "id": "asasasas", "md5": "siinonmd5string", "result": 0, "resultstring": "sssasasc"}
 public class Answermd5 implements ServerContext {
+
+    public static final String NOT_FOUND = "not found";
+    public static final String NOT_ENOUGH_TIME = "timeout";
 
     @Override
     public String executeCommand(Map<String, String> request) {
@@ -37,11 +39,11 @@ public class Answermd5 implements ServerContext {
                 commander.getResultsDoneFlags().put(requestId, true);
                 break;
             case "1":
-                answerString = "not found";
+                answerString = NOT_FOUND;
                 new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
             case "2":
-                answerString = "did not find within appropriate time";
+                answerString = NOT_ENOUGH_TIME;//TODO should once more try to solve
                 new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
         }

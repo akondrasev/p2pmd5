@@ -12,12 +12,12 @@ public class Resourcereply implements ServerContext {
     private String getNextTask(String requestId) {
         String last = commander.getLastTasksMap().get(requestId);
         String currentTask = " ";
-        if(last != null){
-            if (last.length() == 1){
+        if (last != null) {
+            if (last.length() == 1) {
                 currentTask = "  ";
-            } else if(last.length() == 2){
+            } else if (last.length() == 2) {
                 currentTask = "   ";
-            } else if(last.length() == 3){
+            } else if (last.length() == 3) {
                 currentTask = String.valueOf(new char[]{(char) 33, ' ', ' ', ' '});
             } else if (last.length() == 4) {
                 char firstChar = last.charAt(0);

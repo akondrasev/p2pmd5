@@ -63,7 +63,7 @@ public class Checkmd5 implements ServerContext {
                 );
                 timer.cancel();
             }
-        }, 4000);
+        }, 5000);
 
         return String.valueOf(ServerContext.OK_CODE);
     }

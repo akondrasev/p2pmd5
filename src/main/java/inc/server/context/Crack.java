@@ -34,7 +34,7 @@ public class Crack implements ServerContext {
                         stringBuffer.append(answer.toString()).append(Util.CRLF);
                     }
                 }
-                stringBuffer.append("Time is out.");
+                stringBuffer.append("Timeout.");
                 stringBuffer.append(" (");
                 stringBuffer.append(commander.getTimeout());
                 stringBuffer.append(" seconds)");
@@ -59,7 +59,7 @@ public class Crack implements ServerContext {
                         String.format("sendport=%s", sendport),
                         String.format("id=%s", requestId),
                         String.format("ttl=%s", ttl),
-                        String.format("noask=%s", noask)//String.format("%s_%s", sendip, sendport)
+                        String.format("noask=%s", noask)
                 );
             }
         }).start();
