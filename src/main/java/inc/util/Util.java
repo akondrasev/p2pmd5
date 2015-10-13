@@ -24,7 +24,6 @@ public class Util {
 
     public static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
         CrackResult reslut = new CrackResult();
-        //TODO timer
         for (String template : ranges) {
             String resultstring = new Md5Worker(md5, template, symbolrange, wildcard).work();
 
