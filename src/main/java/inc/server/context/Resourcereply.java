@@ -9,26 +9,10 @@ public class Resourcereply implements ServerContext {
 
     private final Commands commander = new Commands();
 
-    private String getNextTask(String requestId) {
-        String last = commander.getLastTasksMap().get(requestId);
-        String currentTask = " ";
-        if (last != null) {
-            if (last.length() == 1) {
-                currentTask = "  ";
-            } else if (last.length() == 2) {
-                currentTask = "   ";
-            } else if (last.length() == 3) {
-                currentTask = String.valueOf(new char[]{(char) 33, ' ', ' ', ' '});
-            } else if (last.length() == 4) {
-                char firstChar = last.charAt(0);
-                int asciiNumber = (int) firstChar;
-                char currentChar = (char) ++asciiNumber;
-                currentTask = String.valueOf(new char[]{currentChar, ' ', ' ', ' '});
-            }
-        }
-
-        commander.getLastTasksMap().put(requestId, currentTask);
-        return "[\"" + currentTask + "\"]";
+    private String getNextTask(String requestId, String host) {
+        String task = Util.getNextTask(requestId);
+        commander.getTasksForComputers().put(requestId+host, task);
+        return task;
     }
 
     @Override
@@ -49,12 +33,15 @@ public class Resourcereply implements ServerContext {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    commander.sendRequest("POST", String.format("%s:%s/checkmd5", toIp, toPort),
+                    String host = String.format("%s:%s", toIp, toPort);
+                    String ranges = getNextTask(requestId, host);
+//                    System.out.println(String.format("Start cracking '%s'", ranges));
+                    commander.sendRequest("POST", String.format("%s/checkmd5", host),
                             String.format("ip=%s", sendip),
                             String.format("port=%s", port),
                             String.format("id=%s", requestId),
                             String.format("md5=%s", currentTask),
-                            String.format("ranges=%s", getNextTask(requestId)),
+                            String.format("ranges=%s", ranges),
                             String.format("wildcard=%s", " "),
                             String.format("symbolrange=%s", "[[33, 126]]")
                     );

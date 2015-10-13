@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 public class Util {
@@ -21,6 +22,32 @@ public class Util {
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
     public static final String CRLF = "\r\n";
+    private static final Object lock = new Object();
+
+    public static String getNextTask(String requestId){
+        synchronized (lock){
+            Commands commander = new Commands();
+            String last = commander.getLastTasksMap().get(requestId);
+            String currentTask = " ";
+            if (last != null) {
+                if (last.length() == 1) {
+                    currentTask = "  ";
+                } else if (last.length() == 2) {
+                    currentTask = "   ";
+                } else if (last.length() == 3) {
+                    currentTask = String.valueOf(new char[]{(char) 33, ' ', ' ', ' '});
+                } else if (last.length() == 4) {
+                    char firstChar = last.charAt(0);
+                    int asciiNumber = (int) firstChar;
+                    char currentChar = (char) ++asciiNumber;
+                    currentTask = String.valueOf(new char[]{currentChar, ' ', ' ', ' '});
+                }
+            }
+
+            commander.getLastTasksMap().put(requestId, currentTask);
+            return "[\"" + currentTask + "\"]";
+        }
+    }
 
     public static CrackResult checkMd5(String md5, String wildcard, String[] ranges, int[][] symbolrange) {
         CrackResult reslut = new CrackResult();

@@ -43,14 +43,15 @@ public class Answermd5 implements ServerContext {
                 new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
             case "2":
-                answerString = NOT_ENOUGH_TIME;//TODO should once more try to solve
+                answerString = NOT_ENOUGH_TIME;
                 new Crack().sendResource(sendip, sendport, requestId, commander.getTtl(), String.format("%s_%s", sendip, sendport));
                 break;
         }
 
 
         String host = ip + ":" + port;
-        String range = commander.getLastTasksMap().get(requestId);
+        String range = commander.getTasksForComputers().get(requestId+host);
+//        System.out.println(String.format("getting result for range: '%s'", range));
         Answer answer = new Answer(host, answerString, range);
         List<Answer> answers = commander.getAnswersMap().get(requestId);
 

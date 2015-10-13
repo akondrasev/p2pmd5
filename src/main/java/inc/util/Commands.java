@@ -28,6 +28,7 @@ public class Commands {
     private static final ConcurrentHashMap<String, String> md5Tasks = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, List<Answer>> answersMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> lastTasksMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> tasksForComputers = new ConcurrentHashMap<>();
 
     static {
         server = new Server();
@@ -39,6 +40,11 @@ public class Commands {
     /*
     synced methods
      */
+    public ConcurrentHashMap<String, String> getTasksForComputers(){
+        synchronized (tasksForComputers){
+            return tasksForComputers;
+        }
+    }
     public ConcurrentHashMap<String, String> getLastTasksMap(){
         synchronized (lastTasksMap){
             return lastTasksMap;
@@ -207,25 +213,25 @@ public class Commands {
         char response = (char) in.read();
         System.out.println(response);
 
-        if (response == '0') {
-            System.out.println("<--- OK");
-        } else {
-            System.out.println("<--- ne OK");
-        }
+//        if (response == '0') {
+////            System.out.println("<--- OK");
+//        } else {
+//            System.out.println("<--- ne OK " + context);
+//        }
         return String.valueOf(response);
     }
 
     private String sendGet(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
         System.out.println(String.format("===> Sending GET request to %s", url));
-        String context = Util.getRequestContext(url);
+        String getString = Util.getRequestContext(url);
         String queryString = Util.generateStringQuery(params);
         System.out.println(String.format("===> query string:\n\t %s\n", queryString));
 
         if (queryString != null) {
-            context = context + "?" + queryString;
+            getString = getString + "?" + queryString;
         }
 
-        out.write("GET " + context + " HTTP/1.1" + Util.CRLF);
+        out.write("GET " + getString + " HTTP/1.1" + Util.CRLF);
         out.write("Host: " + url + Util.CRLF);
         out.write(Util.CRLF);
         out.flush();
@@ -234,11 +240,11 @@ public class Commands {
         char response = (char) in.read();
         System.out.println(response);
 
-        if (response == '0') {
-            System.out.println("<=== OK");
-        } else {
-            System.out.println("<=== ne OK");
-        }
+//        if (response == '0') {
+////            System.out.println("<=== OK");
+//        } else {
+//            System.out.println("<=== ne OK " + getString);
+//        }
 
         return String.valueOf(response);
     }

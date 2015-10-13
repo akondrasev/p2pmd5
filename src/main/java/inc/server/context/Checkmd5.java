@@ -50,7 +50,7 @@ public class Checkmd5 implements ServerContext {
                 if(!commander.isWorking()){
                     return;
                 }
-                System.out.print("*** Aboritng cracking range " + Arrays.toString(ranges) + Util.CRLF);
+//                System.out.print("*** Aboritng cracking range " + Arrays.toString(ranges) + Util.CRLF);
                 crackThread.interrupt();
                 commander.setWorking(false);
 
@@ -63,7 +63,7 @@ public class Checkmd5 implements ServerContext {
                 );
                 timer.cancel();
             }
-        }, 5000);
+        }, 7000);
 
         return String.valueOf(ServerContext.OK_CODE);
     }
