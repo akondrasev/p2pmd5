@@ -138,7 +138,7 @@ public class Commands {
     }
 
     public String readConfigFromFile(String fileName) {
-        String machinesJson = Util.readJsonFromFile(fileName);
+        String machinesJson = Util.readFile(fileName);
         if (machinesJson == null) {
             return "file not found";
         }
@@ -192,7 +192,7 @@ public class Commands {
     private String sendPost(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
         System.out.println(String.format("---> Sending POST request to %s", url));
         String context = Util.getRequestContext(url);
-        JSONObject postData = Util.parseStringArrayToJson(params);
+        JSONObject postData = Util.generateJson(params);
         System.out.println(String.format("---> post data:\n\t %s\n", postData));
 
         out.write("POST " + context + " HTTP/1.1" + Util.CRLF);
@@ -218,7 +218,7 @@ public class Commands {
     private String sendGet(String url, InputStreamReader in, OutputStreamWriter out, String... params) throws IOException {
         System.out.println(String.format("===> Sending GET request to %s", url));
         String context = Util.getRequestContext(url);
-        String queryString = Util.parseArrayToGetParams(params);
+        String queryString = Util.generateStringQuery(params);
         System.out.println(String.format("===> query string:\n\t %s\n", queryString));
 
         if (queryString != null) {

@@ -16,11 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 public class UtilTest {
 
-    @Before
-    public void setUp() {
-
-    }
-
     @Test
     public void testCheckMd5() {
 //        32 - 127 ASCII chars
@@ -69,7 +64,7 @@ public class UtilTest {
         params[0] = "param1=val1";
         params[1] = "param2=val2";
         params[2] = "param3=val3";
-        String result = Util.parseArrayToGetParams(params);
+        String result = Util.generateStringQuery(params);
         assertEquals("correct URL params", "param1=val1&param2=val2&param3=val3", result);
     }
 
@@ -136,20 +131,10 @@ public class UtilTest {
         params[1] = "param2=val2";
         params[2] = "param3=[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"]";
         params[3] = "param4=100";
-        JSONObject result = Util.parseStringArrayToJson(params);
+        JSONObject result = Util.generateJson(params);
 
         JSONObject expected = new JSONObject("{\"param1\":\"val\", \"param2\":\"val2\", \"param3\":[\"ax?o?ssss\",\"aa\",\"ab\",\"ac\",\"ad\"], \"param4\":100}");
         assertEquals(expected.toString(), result.toString());
-    }
-
-    @Test
-    public void testParseArrayToGetParams() throws Exception {
-
-    }
-
-    @Test
-    public void testGetCurrentHostIp() throws Exception {
-
     }
 
     @Test
@@ -180,7 +165,7 @@ public class UtilTest {
                 toFile.flush();
                 toFile.close();
 
-                String result = Util.readJsonFromFile("test.txt");
+                String result = Util.readFile("test.txt");
                 assertEquals(containment, result);
 
                 boolean deleted = newFile.delete();

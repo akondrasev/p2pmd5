@@ -89,7 +89,7 @@ public class Util {
         return result;
     }
 
-    public static JSONObject parseStringArrayToJson(String... params) {
+    public static JSONObject generateJson(String... params) {
         JSONObject jsonObject = new JSONObject();
 
         for (String string : params) {
@@ -112,7 +112,11 @@ public class Util {
 
             try {
                 int test = Integer.parseInt(value);
-                jsonObject.put(key, test);
+                if(!key.equals("port")){
+                    jsonObject.put(key, test);
+                } else {
+                    jsonObject.put(key, value);
+                }
             } catch (NumberFormatException e) {
                 jsonObject.put(key, value);
             }
@@ -121,7 +125,7 @@ public class Util {
         return jsonObject;
     }
 
-    public static String parseArrayToGetParams(String... params) {
+    public static String generateStringQuery(String... params) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < params.length; i++) {
             stringBuilder.append(String.valueOf(params[i]));
@@ -179,7 +183,7 @@ public class Util {
         return "/" + arr[1].split("\\?")[0].split("HTTP")[0].trim();
     }
 
-    public static String readJsonFromFile(String file) {
+    public static String readFile(String file) {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
