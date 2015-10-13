@@ -49,7 +49,7 @@ public class HttpRequestHandler implements Runnable {
         }
 
         if (!correctReadingStarted) {
-            System.out.println("\n\t***There occurs troubles with reading data");
+//            System.out.println("\n\t***There occurs troubles with reading data");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -87,9 +87,7 @@ public class HttpRequestHandler implements Runnable {
         String[] lines = socketInputText.split(Util.CRLF);
         boolean isJson = false;
 
-        for (int i = 0; i < lines.length; i++) {
-            String current = lines[i];
-
+        for (String current : lines) {
             if (current.contains("GET ")) {
                 request = Util.getRequestFromStringQuery(current);
             }
